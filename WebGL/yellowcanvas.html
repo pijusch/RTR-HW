@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title> Yellow Canvas </title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<!-- <script type="text/javascript" src="yellowcanvas.js"></script> -->
+
+<script id = "shader-fs" type = "x-shader/x-fragment">
+  precision mediump float;
+  varying vec4 vColor;
+ void main(void){
+  gl_FragColor= vColor;
+ }
+</script>
+
+<script id = "shader-vs" type = "x-shader/x-vertex">
+ attribute vec3 aVertexPosition;
+ attribute vec4 aVertexColor;
+ varying vec4 vColor;
+ void main(void){
+  vColor = aVertexColor;
+  gl_Position = vec4(aVertexPosition, 1.0);
+ }
+
+</script>
+
+<script type="text/javascript" src="shaders_setup.js"></script>
+<script type="text/javascript" src="code01.js"></script>
+
+</head>
+
+<body onload="webGLStart();">
+
+    <canvas id="yellow-canvas" style="border: none;" width="500" height="500"></canvas>
+
+    <br/>
+
+     <button  onclick="button(0)"> CHAOS </button>
+	<button  onclick="button(1)"> NORMAL </button>
+     <button  onclick="button(0)"> fl1 </button>
+	<button  onclick="button(1)"> fl2 </button>
+     <button  onclick="button(0)"> fl3 </button>
+	<button  onclick="button(1)"> fl4 </button>
+     <button  onclick="button(0)"> drwa all </button>
+
+
+ <!-- courtesy:
+ http://mounirmesselmeni.github.io/2012/11/20/reading-csv-file-with-javascript-and-html5-file-api/  -->
+ <div>
+    <form class="form-horizontal well">
+      <legend>
+        <h3>
+          <div id="title">HTML5 File API</div>
+        </h3>
+      </legend>
+      <fieldset>
+          <label for="csvFileInput"> <strong>CSV File:</strong>
+          </label>
+          <input type="file" id="csvFileInput" onchange="handleFiles(this.files)"
+          accept=".csv">
+        </div>
+      </fieldset>
+    </form>
+    <div id="output">
+    </div>
+  </div>
+
+</body>
+
+
+</html>
+
+
