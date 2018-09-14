@@ -1,7 +1,9 @@
-/* Hardcoding few things for now*/
-//Iris-setosa, Iris-versicolor, Iris-virginica
+/** Hardcoding few things for now
+**/
 
 
+/**Global Variables (Bad Implementation, works though :) )
+**/
 var f = [0,0,0,0];
 var ise_bars = [0,0,0,0];
 var ive_bars = [0,0,0,0];
@@ -17,7 +19,35 @@ var colors = [];
 var vertices = [];
 var indices = [];
 var arrayMax = numOfRec*16
-var limit = 1.0
+
+/**
+Functions
+
+initGL
+drawScene
+randomDraw
+drawOne
+drawAll
+barColor
+initColors
+drawChart ??
+initBuffers
+initVertices
+WebGLDraw
+drawScene
+buttonEvent
+chaos
+normalize
+initIndices
+processCSV
+
+Note: Excluding File Handling
+
+**/
+
+
+
+
     function initGL(canvas) {
         try {
             gl = canvas.getContext("webgl");
@@ -33,6 +63,7 @@ var limit = 1.0
 
 
     function drawScene() {
+        //gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE);
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -44,7 +75,8 @@ var limit = 1.0
 
         //gl.drawArrays(gl.TRIANGLES, 0, squareVertexPositionBuffer.numItems);
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
- gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0); 				
+        gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+ 				
     }
    var index = 0
    function randomDraw(){
@@ -76,6 +108,19 @@ var limit = 1.0
   	 drawScene();        
     }   
  
+ function drawOne(arg){
+   f = arg;
+     initVertices();
+ initIndices();
+ initBuffers();
+ drawScene();
+ }
+
+
+ function drawAll(){
+
+ }
+
   function barColor(){
 	colors = [];
         for (var j = 0; j < arrayMax; j++){
@@ -183,7 +228,7 @@ var limit = 1.0
         initBuffers();
 
 
-        gl.clearColor(1, 1, 1, 1);
+        gl.clearColor(0, 1, 1, 1);
 	//initColors();
         barColor();
 	initVertices();
@@ -201,18 +246,27 @@ function chaos(ms) {
   interval  = setInterval(randomDraw, ms);
 }
 
- function button(val){
-   if (val==0){
-    chaos(100); 
-    }
-   else if(val ==1){
-    clearInterval(interval);
-    barColor();
-    initBuffers();
-    drawScene();
+ function buttonEvent(arg){
+   if(arg ==0){
+     drawOne(ise_bars);
    }
-  //initColors();
-  //drawScene();
+   else if(arg ==1){
+     drawOne(ive_bars);
+   }
+   else if(arg ==2){
+    drawOne(ivi_bars);
+   }
+   else if(arg ==3){
+    drawAll();
+   }
+   else if(arg ==4){
+	document.getElementById("ise").style.display = 'none';
+	document.getElementById("ive").style.display = 'none';
+	document.getElementById("ivi").style.display = 'none';
+	document.getElementById("chaos").style.display = 'none';
+	document.getElementById("all").style.display = 'none';
+     chaos(100);
+   }
 }
 
    function initBuffers(){
@@ -253,12 +307,8 @@ function chaos(ms) {
    }
 
 
-
-
-
-
-
-
+/**File Loading adapted from program 05 (Prof. Shen)
+**/
 
 function handleFiles(files) {
 	// Check for the various File API support.
@@ -293,7 +343,6 @@ function processData(csv) {
 	console.log(lines);
      
     processCSV(lines);
-    //set_data(lines);
 }
 
 function errorHandler(evt) {
@@ -331,9 +380,12 @@ c3 = 0
    ive_bars[j] = ive_bars[j]/(c2*1.0);
    ivi_bars[j] = ivi_bars[j]/(c3*1.0);
  }
- f = ise_bars;
- initVertices();
- initIndices();
- initBuffers();
- drawScene();
+ document.getElementById("csv_input").style.display = 'none';
+ document.getElementById("ise").style.display = 'block';
+ document.getElementById("ive").style.display = 'block';
+ document.getElementById("ivi").style.display = 'block';
+ document.getElementById("all").style.display = 'block';
+ document.getElementById("chaos").style.display = 'block';
+ alert('File loaded :)');
+ 
 }

@@ -34,12 +34,13 @@
 
 <body onload="webGLStart();">
 
-    <canvas id="lab1-canvas" style="border: none;" width="500" height="500"></canvas>
+    <canvas id="lab1-canvas" style="border: 1;" width="500" height="500"></canvas>
 
 
  <!-- courtesy:
  http://mounirmesselmeni.github.io/2012/11/20/reading-csv-file-with-javascript-and-html5-file-api/  -->
- <div>
+ 
+<div id = 'csv_input'>
     <form class="form-horizontal well">
       <fieldset>
           <label for="csvFileInput"> <strong>CSV File:</strong>
@@ -52,9 +53,25 @@
     <div id="output">
     </div>
   </div>
+<div id = 'loaded'>
+ Loaded :)
+</div>
 
+<button id  = 'ise' onclick="buttonEvent(0)"> Iris-setosa </button>
+<button id  = 'ive' onclick="buttonEvent(1)"> Iris-versicolor </button>
+<button id  = 'ivi' onclick="buttonEvent(2)"> Iris-virginica </button>
+<button id  = 'all' onclick="buttonEvent(3)"> Plot All </button>
+<button id  = 'chaos' onclick="buttonEvent(4)"> Do Not Press ! </button>
 </body>
 
+<script>
+document.getElementById("loaded").style.display = 'none';
+document.getElementById("ise").style.display = 'none';
+document.getElementById("ive").style.display = 'none';
+document.getElementById("ivi").style.display = 'none';
+document.getElementById("chaos").style.display = 'none';
+document.getElementById("all").style.display = 'none';
+</script>
 
 </html>
 
