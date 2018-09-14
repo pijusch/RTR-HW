@@ -121,16 +121,39 @@ Note: Excluding File Handling
 
  }
 
+ function addBarColor(arg){
+   col = [];
+   col = col.concat(arg);
+   col = col.concat([1.0]);
+   col = col.concat(arg);
+   col = col.concat([0.8]);
+   col = col.concat(arg);
+   col = col.concat([0.5]);
+   col = col.concat(arg);
+   col = col.concat([0.2]);
+   return col;
+ }
+ 
   function barColor(){
 	colors = [];
-        for (var j = 0; j < arrayMax; j++){
-          if (j%4==3 || j%4==0){
+        colors = colors.concat(addBarColor([1,0,0]));
+        colors = colors.concat(addBarColor([0,1,0]));
+        colors = colors.concat(addBarColor([0,0,1]));
+        colors = colors.concat(addBarColor([1,0.5,0]));
+        /*for (var j = 0; j < arrayMax; j++){
+        if(j%4==3){
+		if (j%16==3){ colors.push(1.0);}
+		else if (j%16==7){ colors.push(1.0*.8);}
+		else if (j%16==11){ colors.push(1.0*.5);}
+		else if (j%16==15){ colors.push(1.0*.2);}	
+        }
+        else if (j%4==0){
 		colors.push(1.0);
 	  }
 	else{
-		colors.push(0)
+		colors.push(0.0)
         }
-       }
+       }*/
   }
 
    function initColors(){
@@ -265,7 +288,8 @@ function chaos(ms) {
 	document.getElementById("ivi").style.display = 'none';
 	document.getElementById("chaos").style.display = 'none';
 	document.getElementById("all").style.display = 'none';
-     chaos(100);
+	document.getElementById("chaos_msg").style.display = 'block';
+        chaos(100);
    }
 }
 
@@ -359,19 +383,19 @@ c3 = 0
    if(lines[i][5]=='Iris-setosa'){
         c1+=1;
 	for (var j =1;j<5;j++){
-            ise_bars[j-1] = ise_bars[j-1] + parseInt(lines[i][j]);
+            ise_bars[j-1] = ise_bars[j-1] + parseFloat(lines[i][j]);
          }
    }
   else if(lines[i][5]=='Iris-versicolor'){
         c2+=1;
 	for (var j =1;j<5;j++){
-            ive_bars[j-1] = ive_bars[j-1] + parseInt(lines[i][j]);
+            ive_bars[j-1] = ive_bars[j-1] + parseFloat(lines[i][j]);
          }
    }
  else if(lines[i][5]=='Iris-virginica'){
         c3+=1;
 	for (var j =1;j<5;j++){
-            ivi_bars[j-1] = ivi_bars[j-1] + parseInt(lines[i][j]);
+            ivi_bars[j-1] = ivi_bars[j-1] + parseFloat(lines[i][j]);
          }
    }
  } 
@@ -387,5 +411,4 @@ c3 = 0
  document.getElementById("all").style.display = 'block';
  document.getElementById("chaos").style.display = 'block';
  alert('File loaded :)');
- 
 }
