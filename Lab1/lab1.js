@@ -4,7 +4,7 @@
 
 /**Global Variables (Bad Implementation, works though :) )
 **/
-var f = [0,0,0,0];
+var f = [1,1,1,1];
 var ise_bars = [0,0,0,0];
 var ive_bars = [0,0,0,0];
 var ivi_bars = [0,0,0,0];
@@ -19,6 +19,13 @@ var colors = [];
 var vertices = [];
 var indices = [];
 var arrayMax = numOfRec*16
+var bVertices = []; 
+var xMin = 0;
+var yMin = 0;
+var xMax = 0;
+var yMax = 0;
+var button ;
+var lastButton;
 
 /**
 Functions
@@ -29,7 +36,6 @@ randomDraw
 drawOne
 drawAll
 barColor
-initColors
 drawChart ??
 initBuffers
 initVertices
@@ -62,21 +68,48 @@ Note: Excluding File Handling
 
 
 
-    function drawScene() {
-        //gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE);
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    function drawScene(arg) {
+	        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        if (arg == 3){
+		num=3;
+	}
+	else if (arg<3 && arg>-1){
+	num = 1;
+	}
+	else{
+          return;
+	}
+     for (var i= 0;i<num;i++){
+        gl.viewport(0+i*gl.viewportWidth/num, 0, gl.viewportWidth/num, gl.viewportHeight/num);
+
+	setBVertices();
+	temp = vertices;
+	tempc = colors;
+        colors = setBColors();
+        vertices = bVertices;
+	initBuffers();
 
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, squareVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.drawArrays(gl.LINES,0,10);
 
-        //gl.drawArrays(gl.TRIANGLES, 0, squareVertexPositionBuffer.numItems);
+	vertices = temp;
+        colors = tempc;
+	initBuffers();
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, squareVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	
+
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
         gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
- 				
+	
+
+     }
     }
    var index = 0
    function randomDraw(){
@@ -89,36 +122,27 @@ Note: Excluding File Handling
 		else{
 			del = -delta;
 		}
-		//ind = Math.floor(Math.random()*15);
 		if (index%3!=0){
 		colors[index] = Math.random();
 		}
 		index+=1;
 		index = index%(numOfRec*16);
 	}
-	/*for (var k 
-        for (var j = 0; j < arrayMax; j++){
-          if (j%3==0){
-		colors.push(1.0);
-	  }
-	  else{
-          colors.push(Math.random());
-          }*/
 	 initBuffers();
-  	 drawScene();        
+  	 drawScene(lastButton);        
     }   
  
  function drawOne(arg){
-   f = arg;
-     initVertices();
- initIndices();
- initBuffers();
- drawScene();
+	initVertices(arg);
+        setBVertices();
+	initIndices();
+	initBuffers();
+	drawScene(arg);
  }
 
 
  function drawAll(){
-
+	drawScene(3);
  }
 
  function addBarColor(arg){
@@ -140,40 +164,40 @@ Note: Excluding File Handling
         colors = colors.concat(addBarColor([0,1,0]));
         colors = colors.concat(addBarColor([0,0,1]));
         colors = colors.concat(addBarColor([1,0.5,0]));
-        /*for (var j = 0; j < arrayMax; j++){
-        if(j%4==3){
-		if (j%16==3){ colors.push(1.0);}
-		else if (j%16==7){ colors.push(1.0*.8);}
-		else if (j%16==11){ colors.push(1.0*.5);}
-		else if (j%16==15){ colors.push(1.0*.2);}	
-        }
-        else if (j%4==0){
-		colors.push(1.0);
-	  }
-	else{
-		colors.push(0.0)
-        }
-       }*/
   }
-
-   function initColors(){
-    colors = [];
-        for (var j = 0; j < arrayMax; j++){
-          if (j%3==0){
-		colors.push(1.0);
-	  }
-	  else{
-          colors.push(0+Math.random()/10);
-          }
-       }
-   
-   }
 
 
  function drawChart(){
   
  }
  
+
+ function setBVertices(){
+    bVertices = [];
+    for (var i = 0;i<10;i++){
+	bVertices = bVertices.concat([xMin,i,0,xMax,i,0]);
+   }
+   bVertices = normalize(bVertices);
+   for (var i=0;i<bVertices.length;i++){
+	if (i%3==0){
+	   if(i%6==0){
+		bVertices[i]-=0.1;
+	   }
+	   else{
+	   bVertices[i]+=0.1;
+	   }
+	}
+    }
+ }
+ function setBColors(){
+  bColors = [];
+  for (var i = 0;i<bVertices.length/3;i++){
+	bColors = bColors.concat([0,0,0,1]);
+  }
+  return bColors;
+ }
+
+
  function normalize(vertices){
 	n  = vertices.length;
 	xMin = 100000;
@@ -209,7 +233,16 @@ Note: Excluding File Handling
 	return vertices
  }
 
-  function initVertices(){
+  function initVertices(arg){
+	if(arg==0){
+		f = ise_bars;
+	}
+	else if(arg==1){
+		f= ive_bars;
+	}
+	else{
+		f = ivi_bars;
+	}
         vertices = [];
 	b1 = [0,0];
 	b2 = [1,0];
@@ -249,19 +282,13 @@ Note: Excluding File Handling
 	shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
         gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
         initBuffers();
-
-
         gl.clearColor(0, 1, 1, 1);
-	//initColors();
         barColor();
 	initVertices();
 	initIndices();
-        //for(var i = 0;i<10 ;i++ ){
-		//chaos(100);
-        //}
 
 	initBuffers();
-        drawScene();
+        drawScene(-1);
     }
 
 
@@ -270,18 +297,11 @@ function chaos(ms) {
 }
 
  function buttonEvent(arg){
-   if(arg ==0){
-     drawOne(ise_bars);
-   }
-   else if(arg ==1){
-     drawOne(ive_bars);
-   }
-   else if(arg ==2){
-    drawOne(ivi_bars);
-   }
-   else if(arg ==3){
-    drawAll();
-   }
+   lastButton = button;
+   button = arg;
+   if(arg ==3 ){
+	drawAll();
+    }
    else if(arg ==4){
 	document.getElementById("ise").style.display = 'none';
 	document.getElementById("ive").style.display = 'none';
@@ -291,43 +311,30 @@ function chaos(ms) {
 	document.getElementById("chaos_msg").style.display = 'block';
         chaos(100);
    }
+	else{
+	drawOne(arg);
+	}
 }
 
    function initBuffers(){
     squareVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-    /*vertices = [
-             -0.1,  -0.1,  0.0,
-            0.1,  -0.1,  0.0,
-             -0.1, 0.1,  0.0,
-            0.1, 0.1, 0.0,
-	0.2,  -0.1,  0.0,
-            0.4,  -0.1,  0.0,
-             0.2, 0.1,  0.0,
-            0.4, 0.1, 0.0
-        ];*/
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     squareVertexPositionBuffer.itemSize = 3;
     squareVertexPositionBuffer.numItems = numOfRec*2;
 
      squareVertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
-    /*colors = [
-	1.0, 0.0, 0.0, 1.0,
-	0.0, 1.0, 0.0, 1.0,
-	0.0, 0.0, 1.0, 1.0,
-	1.0, 0.0, 0.0, 1.0,
-	];*/
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
     squareVertexColorBuffer.itemSize = 4;
     squareVertexColorBuffer.numItems = numOfRec*2;
 
-    //var indices = [0,1,2,3,1,2,4,5,6,7,5,6];
  VertexIndexBuffer = gl.createBuffer();
  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
  VertexIndexBuffer.itemsize = 1;
  VertexIndexBuffer.numItems = numOfRec*6;
+
    }
 
 
