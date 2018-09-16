@@ -17,6 +17,9 @@ var squareVertexColorBuffer;
 var vertexIndexBuffer;
 var colors = [];
 var vertices = [];
+var vertices1 = [];
+var vertices2 = [];
+var vertices3 = [];
 var indices = [];
 var arrayMax = numOfRec*16
 var bVertices = []; 
@@ -50,7 +53,15 @@ processCSV
 Note: Excluding File Handling
 
 **/
-
+   function bindVertices(arg){
+	if (arg==0){
+		vertices = vertices1;
+	}
+	else if (arg==1){
+		vertices = vertices2;
+	}
+	else vertices = vertices3;
+   }
 
 
 
@@ -80,10 +91,9 @@ Note: Excluding File Handling
           return;
 	}
      for (var i= 0;i<num;i++){
-        gl.viewport(0+i*gl.viewportWidth/num, 0, gl.viewportWidth/num, gl.viewportHeight/num);
+        gl.viewport(0+i*gl.viewportWidth/num, 0, gl.viewportWidth/num, gl.viewportHeight);
 
 	setBVertices();
-	temp = vertices;
 	tempc = colors;
         colors = setBColors();
         vertices = bVertices;
@@ -93,9 +103,10 @@ Note: Excluding File Handling
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, squareVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.drawArrays(gl.LINES,0,10);
+	gl.drawArrays(gl.LINES,0,24);
 
-	vertices = temp;
+	if (arg==3) bindVertices(i);
+	else bindVertices(arg);
         colors = tempc;
 	initBuffers();
 	
@@ -133,7 +144,7 @@ Note: Excluding File Handling
     }   
  
  function drawOne(arg){
-	initVertices(arg);
+	//initVertices(arg);
         setBVertices();
 	initIndices();
 	initBuffers();
@@ -175,19 +186,24 @@ Note: Excluding File Handling
  function setBVertices(){
     bVertices = [];
     for (var i = 0;i<10;i++){
-	bVertices = bVertices.concat([xMin,i,0,xMax,i,0]);
+	bVertices = bVertices.concat([0,i,0,1,i,0]);
    }
+   bVertices = bVertices.concat([0,0,0,0,9,0,1,0,0,1,9,0]);
    bVertices = normalize(bVertices);
-   for (var i=0;i<bVertices.length;i++){
+   for (var i=0;i<bVertices.length-12;i++){
 	if (i%3==0){
 	   if(i%6==0){
 		bVertices[i]-=0.1;
 	   }
 	   else{
-	   bVertices[i]+=0.1;
+	    bVertices[i]+=0.1;
 	   }
 	}
     }
+   bVertices[20*3]-=0.1;
+   bVertices[20*3+3]-=0.1;
+   bVertices[20*3+6]+=0.1;
+   bVertices[20*3+9]+=0.1;
  }
  function setBColors(){
   bColors = [];
@@ -224,16 +240,16 @@ Note: Excluding File Handling
 	}
 	for (var i = 0; i<n; i++){
 		if (i%3==0){
-			vertices[i] = 1.6*(vertices[i]-xMin)/(xMax-xMin)-0.8;
+			vertices[i] = 1.8*(vertices[i]-xMin)/(xMax-xMin)-.9;
 		}
 		else if (i%3==1){
-			vertices[i] = 1.6*(vertices[i]-yMin)/(yMax-yMin)-0.8;			
+			vertices[i] = 1.96*(vertices[i]-yMin)/(yMax-yMin)-.98;			
 		}
 	}
 	return vertices
  }
 
-  function initVertices(arg){
+  function initVertices(vertices,arg){
 	if(arg==0){
 		f = ise_bars;
 	}
@@ -264,6 +280,7 @@ Note: Excluding File Handling
 		vertices.push(0);
 	}
 	vertices = normalize(vertices);
+	return vertices;
  }
 	function initIndices(){
 		for (var i =0;i< numOfRec;i++){
@@ -274,6 +291,9 @@ Note: Excluding File Handling
     function webGLStart() {
         var canvas = document.getElementById("lab1-canvas");
         initGL(canvas);
+	//var ctx = canvas.getContext("2d");
+	//gl.font = "30px Arial";
+	//gl.strokeText("Hello World",100,50);
         initShaders();
         
 	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
@@ -282,9 +302,9 @@ Note: Excluding File Handling
 	shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
         gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
         initBuffers();
-        gl.clearColor(0, 1, 1, 1);
+        gl.clearColor(0.9, 0.9, 0.9, 1);
         barColor();
-	initVertices();
+	//initVertices();
 	initIndices();
 
 	initBuffers();
@@ -300,9 +320,13 @@ function chaos(ms) {
    lastButton = button;
    button = arg;
    if(arg ==3 ){
+	document.getElementById("all-text").style.display = 'block';
+	document.getElementById("one-text").style.display = 'none';
 	drawAll();
     }
    else if(arg ==4){
+	document.getElementById("all-text").style.display = 'none';
+	document.getElementById("one-text").style.display = 'none';
 	document.getElementById("ise").style.display = 'none';
 	document.getElementById("ive").style.display = 'none';
 	document.getElementById("ivi").style.display = 'none';
@@ -312,6 +336,8 @@ function chaos(ms) {
         chaos(100);
    }
 	else{
+	document.getElementById("all-text").style.display = 'none';
+	document.getElementById("one-text").style.display = 'block';
 	drawOne(arg);
 	}
 }
@@ -378,7 +404,7 @@ function processData(csv) {
 
 function errorHandler(evt) {
 	if(evt.target.error.name == "NotReadableError") {
-		alert("Canno't read file !");
+		alert("Cannot read file !");
 	}
 }
 
@@ -411,6 +437,9 @@ c3 = 0
    ive_bars[j] = ive_bars[j]/(c2*1.0);
    ivi_bars[j] = ivi_bars[j]/(c3*1.0);
  }
+ vertices1 = initVertices(vertices1,0);
+ vertices2 = initVertices(vertices2,1);
+ vertices3 = initVertices(vertices3,2);
  document.getElementById("csv_input").style.display = 'none';
  document.getElementById("ise").style.display = 'block';
  document.getElementById("ive").style.display = 'block';

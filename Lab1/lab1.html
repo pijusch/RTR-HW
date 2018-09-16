@@ -55,11 +55,21 @@
   </div>
 <div id = 'chaos_msg'>
  Told Ya :)
+</br>
+
 </div>
 
-<button id  = 'ise' onclick="buttonEvent(0)"> Iris-setosa </button>
-<button id  = 'ive' onclick="buttonEvent(1)"> Iris-versicolor </button>
-<button id  = 'ivi' onclick="buttonEvent(2)"> Iris-virginica </button>
+<div id = 'all-text'>
+&nbsp &nbsp &nbsp Iris-setosa &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Iris-versicolor &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Iris-virginica
+</div>
+
+<div id = 'one-text'>
+<font size = '2'> &nbsp &nbsp &nbsp Sepal-Length(cm) &nbsp &nbsp &nbsp Sepal-Width(cm) &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Petal-Length(cm) &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Petal-Width(cm) </font>
+</div>
+
+<button id  = 'ise' onclick="buttonEvent(0)"> Iris-setosa Averages</button>
+<button id  = 'ive' onclick="buttonEvent(1)"> Iris-versicolor Averages</button>
+<button id  = 'ivi' onclick="buttonEvent(2)"> Iris-virginica Averages</button>
 <button id  = 'all' onclick="buttonEvent(3)"> Plot All </button>
 <button id  = 'chaos' onclick="buttonEvent(4)"> Do Not Press ! </button>
 </body>
@@ -71,6 +81,8 @@ document.getElementById("ive").style.display = 'none';
 document.getElementById("ivi").style.display = 'none';
 document.getElementById("chaos").style.display = 'none';
 document.getElementById("all").style.display = 'none';
+document.getElementById("all-text").style.display = 'none';
+document.getElementById("one-text").style.display = 'none';
 </script>
 
 </html>
