@@ -2,7 +2,7 @@
 **/
 
 
-/**Global Variables (Bad Implementation, works though :) )
+/**Global Variables)
 **/
 var f = [1,1,1,1];
 var ise_bars = [0,0,0,0];
@@ -22,16 +22,15 @@ var vertices2 = [];
 var vertices3 = [];
 var indices = [];
 var arrayMax = numOfRec*16
-var bVertices = []; 
-var xMin = 0;
-var yMin = 0;
-var xMax = 0;
-var yMax = 0;
+var bVertices = [];
 var button ;
 var lastButton;
 
 /**
 Functions
+
+Their uses have been added next to the declaration.
+
 
 initGL
 drawScene
@@ -39,7 +38,6 @@ randomDraw
 drawOne
 drawAll
 barColor
-drawChart ??
 initBuffers
 initVertices
 WebGLDraw
@@ -50,10 +48,10 @@ normalize
 initIndices
 processCSV
 
-Note: Excluding File Handling
+
 
 **/
-   function bindVertices(arg){
+   function bindVertices(arg){  /**Selects the Graph to be drawn**/
 	if (arg==0){
 		vertices = vertices1;
 	}
@@ -65,7 +63,7 @@ Note: Excluding File Handling
 
 
 
-    function initGL(canvas) {
+    function initGL(canvas) { /** Gets Canvas **/
         try {
             gl = canvas.getContext("webgl");
             gl.viewportWidth = canvas.width;
@@ -79,7 +77,7 @@ Note: Excluding File Handling
 
 
 
-    function drawScene(arg) {
+    function drawScene(arg) { /** Draws Scene **/ 
 	        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         if (arg == 3){
 		num=3;
@@ -103,7 +101,7 @@ Note: Excluding File Handling
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, squareVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.drawArrays(gl.LINES,0,24);
+	gl.drawArrays(gl.LINES,0,44);
 
 	if (arg==3) bindVertices(i);
 	else bindVertices(arg);
@@ -123,8 +121,8 @@ Note: Excluding File Handling
      }
     }
    var index = 0
-   function randomDraw(){
-	delta = 0.2;
+   function randomDraw(){ /** Utility function for chaos. See function chaos**/
+	delta = 0.2; 
 	for (var j  =0; j< 100;j++){
 		toss = Math.random();
 		if (toss>0.5){
@@ -143,8 +141,7 @@ Note: Excluding File Handling
   	 drawScene(lastButton);        
     }   
  
- function drawOne(arg){
-	//initVertices(arg);
+ function drawOne(arg){ /** Draws one of the three graphs **/
         setBVertices();
 	initIndices();
 	initBuffers();
@@ -152,24 +149,24 @@ Note: Excluding File Handling
  }
 
 
- function drawAll(){
+ function drawAll(){ /** Plots all three graphs **/
 	drawScene(3);
  }
 
- function addBarColor(arg){
+ function addBarColor(arg){ /**Intializes bar given a color. Adds hue effect. **/
    col = [];
    col = col.concat(arg);
    col = col.concat([1.0]);
    col = col.concat(arg);
    col = col.concat([0.8]);
    col = col.concat(arg);
-   col = col.concat([0.5]);
+   col = col.concat([0.4]);
    col = col.concat(arg);
    col = col.concat([0.2]);
    return col;
  }
  
-  function barColor(){
+  function barColor(){ /** Intializes all bars **/
 	colors = [];
         colors = colors.concat(addBarColor([1,0,0]));
         colors = colors.concat(addBarColor([0,1,0]));
@@ -178,17 +175,12 @@ Note: Excluding File Handling
   }
 
 
- function drawChart(){
-  
- }
- 
-
- function setBVertices(){
+ function setBVertices(){ /** Vertices for background lines**/
     bVertices = [];
-    for (var i = 0;i<10;i++){
+    for (var i = 0;i<20;i++){
 	bVertices = bVertices.concat([0,i,0,1,i,0]);
    }
-   bVertices = bVertices.concat([0,0,0,0,9,0,1,0,0,1,9,0]);
+   bVertices = bVertices.concat([0,0,0,0,i-1,0,1,0,0,1,i-1,0]);
    bVertices = normalize(bVertices);
    for (var i=0;i<bVertices.length-12;i++){
 	if (i%3==0){
@@ -200,12 +192,12 @@ Note: Excluding File Handling
 	   }
 	}
     }
-   bVertices[20*3]-=0.1;
-   bVertices[20*3+3]-=0.1;
-   bVertices[20*3+6]+=0.1;
-   bVertices[20*3+9]+=0.1;
+   bVertices[40*3]-=0.1;
+   bVertices[40*3+3]-=0.1;
+   bVertices[40*3+6]+=0.1;
+   bVertices[40*3+9]+=0.1;
  }
- function setBColors(){
+ function setBColors(){ 
   bColors = [];
   for (var i = 0;i<bVertices.length/3;i++){
 	bColors = bColors.concat([0,0,0,1]);
@@ -214,7 +206,7 @@ Note: Excluding File Handling
  }
 
 
- function normalize(vertices){
+ function normalize(vertices){ /** Normalizes everything to viewport **/
 	n  = vertices.length;
 	xMin = 100000;
 	xMax = -1;
@@ -249,7 +241,7 @@ Note: Excluding File Handling
 	return vertices
  }
 
-  function initVertices(vertices,arg){
+  function initVertices(vertices,arg){ /** Initializes rectangles for bars **/
 	if(arg==0){
 		f = ise_bars;
 	}
@@ -279,21 +271,18 @@ Note: Excluding File Handling
 		vertices.push(b4[1]*f[i%4]);
 		vertices.push(0);
 	}
-	vertices = normalize(vertices);
 	return vertices;
  }
-	function initIndices(){
+	function initIndices(){ /** Indices for element array **/
 		for (var i =0;i< numOfRec;i++){
 			indices = indices.concat([i*4+0,i*4+1,i*4+2,i*4+3,i*4+1,i*4+2]);
 		}
 	}
 
-    function webGLStart() {
+
+    function webGLStart() { /** First Call**/
         var canvas = document.getElementById("lab1-canvas");
         initGL(canvas);
-	//var ctx = canvas.getContext("2d");
-	//gl.font = "30px Arial";
-	//gl.strokeText("Hello World",100,50);
         initShaders();
         
 	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
@@ -304,7 +293,6 @@ Note: Excluding File Handling
         initBuffers();
         gl.clearColor(0.9, 0.9, 0.9, 1);
         barColor();
-	//initVertices();
 	initIndices();
 
 	initBuffers();
@@ -312,11 +300,11 @@ Note: Excluding File Handling
     }
 
 
-function chaos(ms) {
+function chaos(ms) { /** Button 'Do Not Press' **/
   interval  = setInterval(randomDraw, ms);
 }
 
- function buttonEvent(arg){
+ function buttonEvent(arg){ /** Handles Button Events **/
    lastButton = button;
    button = arg;
    if(arg ==3 ){
@@ -342,26 +330,30 @@ function chaos(ms) {
 	}
 }
 
-   function initBuffers(){
-    squareVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    squareVertexPositionBuffer.itemSize = 3;
-    squareVertexPositionBuffer.numItems = numOfRec*2;
+   function initBuffers(){ /** Sets Buffers **/
 
-     squareVertexColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-    squareVertexColorBuffer.itemSize = 4;
-    squareVertexColorBuffer.numItems = numOfRec*2;
+	squareVertexPositionBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	squareVertexPositionBuffer.itemSize = 3;
+	squareVertexPositionBuffer.numItems = numOfRec*2;
 
- VertexIndexBuffer = gl.createBuffer();
- gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
- gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
- VertexIndexBuffer.itemsize = 1;
- VertexIndexBuffer.numItems = numOfRec*6;
+	squareVertexColorBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+	squareVertexColorBuffer.itemSize = 4;
+	squareVertexColorBuffer.numItems = numOfRec*2;
 
+	VertexIndexBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+	VertexIndexBuffer.itemsize = 1;
+	VertexIndexBuffer.numItems = numOfRec*6;
    }
+
+
+
+
 
 
 /**File Loading adapted from program 05 (Prof. Shen)
@@ -408,7 +400,7 @@ function errorHandler(evt) {
 	}
 }
 
-function processCSV(lines){
+function processCSV(lines){  /** Evaluates Averages for all the flowers **/
 c1 = 0
 c2 = 0
 c3 = 0
@@ -440,6 +432,10 @@ c3 = 0
  vertices1 = initVertices(vertices1,0);
  vertices2 = initVertices(vertices2,1);
  vertices3 = initVertices(vertices3,2);
+ temp = normalize(vertices1.concat(vertices2.concat(vertices3)));
+ vertices1 = temp.slice(0,48);
+ vertices2 = temp.slice(48,96);
+ vertices3 = temp.slice(96,144);
  document.getElementById("csv_input").style.display = 'none';
  document.getElementById("ise").style.display = 'block';
  document.getElementById("ive").style.display = 'block';
