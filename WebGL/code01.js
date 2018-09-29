@@ -1,7 +1,7 @@
 /* Hardcoding few things for now*/
 
 var f = [.1,.2,.1,.3];
-var numOfRec = 4;
+var numOfRec = 1;
 var numOfCharts = 1;
 
 var lines = [];
@@ -178,14 +178,14 @@ var lines = [];
 
 	shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
         gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-        initBuffers();
+        //initBuffers();
 
 
         gl.clearColor(.5, 1, .2, .7);
 	//initColors();
-        barColor();
-	initVertices();
-	initIndices();
+        //barColor();
+	//initVertices();
+	//initIndices();
         //for(var i = 0;i<10 ;i++ ){
 		//chaos(100);
         //}
@@ -216,38 +216,34 @@ function chaos(ms) {
    function initBuffers(){
     squareVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-    /*vertices = [
+    vertices = [
              -0.1,  -0.1,  0.0,
             0.1,  -0.1,  0.0,
              -0.1, 0.1,  0.0,
-            0.1, 0.1, 0.0,
-	0.2,  -0.1,  0.0,
-            0.4,  -0.1,  0.0,
-             0.2, 0.1,  0.0,
-            0.4, 0.1, 0.0
-        ];*/
+            0.1, 0.1, 0.0
+        ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     squareVertexPositionBuffer.itemSize = 3;
-    squareVertexPositionBuffer.numItems = numOfRec*2;
+    squareVertexPositionBuffer.numItems = 4;
 
      squareVertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
-    /*colors = [
+    colors = [
 	1.0, 0.0, 0.0, 1.0,
 	0.0, 1.0, 0.0, 1.0,
 	0.0, 0.0, 1.0, 1.0,
 	1.0, 0.0, 0.0, 1.0,
-	];*/
+	];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
     squareVertexColorBuffer.itemSize = 4;
-    squareVertexColorBuffer.numItems = numOfRec*2;
+    squareVertexColorBuffer.numItems = 4;
 
-    //var indices = [0,1,2,3,1,2,4,5,6,7,5,6];
+    var indices = [0,1,2,3,1,2];
  VertexIndexBuffer = gl.createBuffer();
  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
  VertexIndexBuffer.itemsize = 1;
- VertexIndexBuffer.numItems = numOfRec*6;
+ VertexIndexBuffer.numItems = 6;
    }
 
 
