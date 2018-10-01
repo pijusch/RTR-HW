@@ -1,50 +1,46 @@
-/** Hardcoding few things for now
-**/
+/**Coordinates for hardcoding a cube adapted from this site - https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Creating_3D_objects_using_WebGL 
+
+Vertices and Indices for Cube
+
+
+
 
 
 /**Global Variables)
 **/
 var gl;
-var rat;
+var rat; // scaling the model
 var shaderProgram;
 var squareVertexPostionBuffer;
 var squareVertexColorBuffer;
 var vertexIndexBuffer;
-var colors = [];
 var eye = [0,-1,-0.2]
 var point = [0,0,0]
 var up = [0,1,0]
-var vertices = [];
-var indices = [];
 var scene_f = 0
 var stack = [];
 var rat = 10;
 var sqr = []
-var population = 0;
-var pop_cor = []
-var pop_ang = []
-var pop_scl = []
-var pop_ax = []
-var pop_col = []
-var button
+var population = 0;  // Size of population ( additional objects apart from the cycle model )
 
+// Randomly generated Properties of floor and population. More in function Initpop()
+var pop_cor = []  // 
+var pop_ang = []  //angle for each cube in the population
+var pop_scl = []  //scaling for each cube
+var pop_ax = []   //
+var pop_col = []  //color for population
 
-//var vWorld = mat4.lookAt([0, 0 , 0], [0, 0 ,-1], [0,1,0 ]);
-//var vWorld = mat4.lookAt([-0.5, -1 , 0], [0, 0 ,-1], [0,0,-1 ]);
+var button;  // last button pressed
+var drawMap = 0 // No Map drawn on start
 
-
-//var World = mat4.lookAt([0.1, -1 , -0.2], [0, 0,0], [0,1,0 ]);
-var World = mat4.lookAt(eye,point,up);
-
-
-
-//var vWorld = mat4.lookAt([0, 0 , 0], [0, 0 ,-1], [0,1,0 ]);
-//var vWorld = mat4.lookAt([0, -0.5 , -0.5], [-1, 0 ,0], [0,0,-1 ]);
-var Map = mat4.lookAt([0.2, 0, 0], [0.2, 0 ,-1], [0,1, 0]);
+var World = mat4.lookAt(eye,point,up); // Camera for main window a.k.a World.
+var Map = mat4.lookAt([0.2, 0, 0], [0.2, 0 ,-1], [0,-1, 0]); // Camera for top right window a.k.a Map.
 var vWorld = mat4.create();
 var vMap = mat4.create();
 vMap = Map
 
+
+//Global Translation Updates to control heirarchy
 var cMatrix1 = mat4.create();
 mat4.identity(cMatrix1);
 var cMatrix2 = mat4.create();
@@ -56,6 +52,8 @@ mat4.identity(cMatrix4);
 var cRed = mat4.create();
 mat4.identity(cRed);
 
+
+//Global Rotation Updates to control heirarchy
 var rMatrix1 = mat4.create();
 mat4.identity(rMatrix1);
 var rMatrix2 = mat4.create();
@@ -67,11 +65,11 @@ mat4.identity(rMatrix4);
 var rMatrix5 = mat4.create();
 mat4.identity(rMatrix5);
 
-var angle = 40;
+var angle = 40; //view angle
 
 var pMatrix = mat4.create();
-mat4.perspective(angle,1,.1,10,pMatrix);
-mat4.multiply(pMatrix,World,vWorld);
+mat4.perspective(angle,1,.1,10,pMatrix); //Projection Matrix
+mat4.multiply(pMatrix,World,vWorld); // Clip View Transformation
 
 
 function keyboardEvent(event){
@@ -90,7 +88,7 @@ function keyboardEvent(event){
 	mat4.translate(cMatrix3,[0,-.5/rat,0]);
 	mat4.translate(cMatrix4,[0,-.5/rat,0]);
   }
-  else if( event.keyCode == 53||event.keyCode == 54){
+  else if( event.keyCode == 53||event.keyCode == 54){ //Zoom in and out
 	if(event.keyCode == 53) angle+=5;
 	else angle-=5;
 	mat4.perspective(angle,1,.1,10,pMatrix);
@@ -117,37 +115,37 @@ function keyboardEvent(event){
 	mat4.translate(cMatrix4,[.5/rat,0,0]);
 
   }
-  else if (event.keyCode == 55){
+  else if (event.keyCode == 55){  // Rotate Arms
 	mat4.rotate(rMatrix4,3.14/5,[0,1,0]);
   }
-else if (event.keyCode == 56){
+else if (event.keyCode == 56){    // Rotate Pedals
 	mat4.rotate(rMatrix5,3.14/5,[0,1,0]);
   }
-else if (event.keyCode == 57){
+else if (event.keyCode == 57){ // Rotate Wheels
 	mat4.rotate(rMatrix1,3.14/5,[1,0,0]);
   }
-else if (event.keyCode == 49){
-	eye[1]+=0.1;
-	point[1]+=0.1;
+else if (event.keyCode == 50){  // Camera Down
+	eye[2]+=0.1;
+	point[2]+=0.1;
 	World = mat4.lookAt(eye,point,up);
 	mat4.perspective(angle,1,.1,10,pMatrix);
 	mat4.multiply(pMatrix,World,vWorld);
   }
-else if (event.keyCode ==50){
-	eye[1]-=0.1;
-	point[1]-=0.1;
+else if (event.keyCode ==49){   // Camera Up
+	eye[2]-=0.1;
+	point[2]-=0.1;
 	World = mat4.lookAt(eye,point,up);
 	mat4.perspective(angle,1,.1,10,pMatrix);
 	mat4.multiply(pMatrix,World,vWorld);
   }
-else if (event.keyCode == 51){
+else if (event.keyCode == 51){ // Camera Left
 	eye[0]+=0.1;
 	point[0]+=0.1;
 	World = mat4.lookAt(eye,point,up);
 	mat4.perspective(angle,1,.1,10,pMatrix);
 	mat4.multiply(pMatrix,World,vWorld);
   }
-else if (event.keyCode == 52){
+else if (event.keyCode == 52){ // Camera Right
 	eye[0]-=0.1;
 	point[0]-=0.1;
 	World = mat4.lookAt(eye,point,up);
@@ -158,8 +156,8 @@ else if (event.keyCode == 52){
   drawScene();
  }
 	
-
-function cube(col){
+/*
+function cube(col){ // Generates a cube at origin with given color
 vertices = [
 // Front face
   -1.0, 1.0,  -1.0,
@@ -200,13 +198,6 @@ vertices = [
 
 colors = []
 for (var i=0;i<24;i++) colors = colors.concat(col)
-/*for (var i=0;i<4;i++) colors = colors.concat([0,1,0,1])
-for (var i=0;i<4;i++) colors = colors.concat([1,0,0,1])
-for (var i=0;i<4;i++) colors = colors.concat([0,0,1,1])
-for (var i=0;i<4;i++) colors = colors.concat([1,0,1,1])
-for (var i=0;i<4;i++) colors = colors.concat([1,0,0,1])
-for (var i=0;i<4;i++) colors = colors.concat([0,0,0,1])
-*/
 
 
 indices = [0,  1,  2,      0,  2,  3,  
@@ -220,7 +211,8 @@ indices = [0,  1,  2,      0,  2,  3,
 
 }
 
- function square(col){
+ function square(col){  // genrates a square at origin (no z component (0)) with given color
+			// Plus added lighting effect
 vertices = [
    -5.0,  -5.0, 0,
    -5.0,  5.0,  0,
@@ -234,7 +226,7 @@ colors = []
 
 
 if (button!=1){
-colors = colors.concat(col); colors = colors.concat(sqr[0]*0.7);
+colors = colors.concat(col); colors = colors.concat(sqr[0]*0.7); //lighting effect using different transparency values
 colors = colors.concat(col); colors = colors.concat(sqr[1]*.7);
 colors = colors.concat(col); colors = colors.concat(sqr[2]*.7);
 colors = colors.concat(col); colors = colors.concat(sqr[3]*.7);
@@ -248,12 +240,12 @@ colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
 }
 
 indices = [
-    0,  1,  2,      0,  2,  3,
+    0,  1,  2, 0,  2,  3,
   ];
 
  }
-
-    function initGL(canvas) { /** Gets Canvas **/
+*/
+ function initGL(canvas) { /** Gets Canvas **/
         try {
             gl = canvas.getContext("webgl");
             gl.viewportWidth = canvas.width;
@@ -266,7 +258,7 @@ indices = [
     }
 
 
- function populate(vMatrix){
+ function populate(vMatrix){  // Initialize the population (happends in each drawScene call)
      for (var i=0;i<population;i++){
 	c  = cube(col = pop_col[i]);
 	mMatrix = mat4.create();
@@ -288,10 +280,11 @@ function buttonEvent(arg){ /** Handles Button Events **/
          initPop();
 	}
     else if (arg==1) population = 10
+     else if (arg==2) drawMap = !drawMap
    drawScene();
 }
 
-   function drawFloor(n,vMatrix){
+   function drawFloor(n,vMatrix){ // Draw the floor. Can be switched off in drawScene
 	rec_size = 10;
 	for (var t = 0;t<4;t++){
 	for ( var i=0;i<n;i++){
@@ -316,7 +309,7 @@ function buttonEvent(arg){ /** Handles Button Events **/
    }
 	
 
-   function drawScope(vMatrix){
+   function drawScope(vMatrix){ // Red square on the map
 	c  = square(col = [1,0,0,1]);
 	mMatrix = mat4.create();
 	mat4.identity(mMatrix);
@@ -341,32 +334,7 @@ function buttonEvent(arg){ /** Handles Button Events **/
 
    }
 
-function drawBackground(){
-	
-	c = square([0,0,0,1])
-	
-	colors = c[1];
-	vertices = normalize(c[0]);
-	indices = c[2];
-
-	initBuffers();
-
-	Matrix = mat4.create();
-	mat4.identity(Matrix);
-
-	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, Matrix);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
-	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, squareVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, VertexIndexBuffer);
-	gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0); 				
-
-}
-
-
-function drawWorld(vmatrix){
+function drawWorld(vmatrix){ // Cycle Model (not using stack for this assignment, since not asked in the question)
 
 //Frame
 
@@ -401,9 +369,7 @@ mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,[0.0,0,-2/rat]);
-//mat4.translate(mMatrix,[0,-0.29/rat,0]);
 mat4.rotate(mMatrix,-3.14/2,[0,1,0]);
-//mat4.translate(mMatrix,[0.1,0,0]);
 mat4.translate(mMatrix,[0.0,0,-1/rat]);
 mat4.translate(mMatrix,[0.58/rat,0,0]);
 mat4.scale(mMatrix,[0.58,0.1,0.1]);
@@ -570,7 +536,7 @@ redraw(mvMatrix);
 }
 
 
-function redraw(mvMatrix){
+function redraw(mvMatrix){ //Buffer initiallization when objects are drawn
  initBuffers()
 gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
@@ -596,6 +562,7 @@ gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	drawFloor(n,vWorld);
 	drawWorld(vWorld);
 	rat =50;
+	if (!drawMap) return
 	gl.viewport(gl.viewportWidth*0.7, gl.viewportHeight*0.7,gl.viewportWidth*.3, gl.viewportHeight*.3);
 	populate(vMap);
 	drawFloor(n,vMap);
@@ -643,7 +610,7 @@ gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 return Math.random() * (max - min) + min;
 }
 
-  function initPop(){
+  function initPop(){ //Population  Properties Initialization
   pop_cor = []
  pop_ang = []
  pop_scl = [] 
@@ -659,7 +626,7 @@ for (var i=0;i<population;i++){
 
  }
 
-    function webGLStart() {
+    function webGLStart() {  // First Call
 	initPop();
        for (var i=0;i<4;i++) sqr.push(Math.random()+0.5)
         var canvas = document.getElementById("lab2-canvas");
