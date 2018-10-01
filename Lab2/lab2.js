@@ -11,10 +11,22 @@ var squareVertexPostionBuffer;
 var squareVertexColorBuffer;
 var vertexIndexBuffer;
 var colors = [];
+var eye = [0,-1,-0.2]
+var point = [0,0,0]
+var up = [0,1,0]
 var vertices = [];
 var indices = [];
-
+var scene_f = 0
 var stack = [];
+var rat = 10;
+var sqr = []
+var population = 0;
+var pop_cor = []
+var pop_ang = []
+var pop_scl = []
+var pop_ax = []
+var pop_col = []
+var button
 
 
 //var vWorld = mat4.lookAt([0, 0 , 0], [0, 0 ,-1], [0,1,0 ]);
@@ -22,7 +34,7 @@ var stack = [];
 
 
 //var World = mat4.lookAt([0.1, -1 , -0.2], [0, 0,0], [0,1,0 ]);
-var World = mat4.lookAt([0, -1 , -0.2], [0, 0,0], [0,1,0 ]);
+var World = mat4.lookAt(eye,point,up);
 
 
 
@@ -78,8 +90,8 @@ function keyboardEvent(event){
 	mat4.translate(cMatrix3,[0,-.5/rat,0]);
 	mat4.translate(cMatrix4,[0,-.5/rat,0]);
   }
-  else if( event.keyCode == 90){
-	if(event.shiftKey) angle+=5;
+  else if( event.keyCode == 53||event.keyCode == 54){
+	if(event.keyCode == 53) angle+=5;
 	else angle-=5;
 	mat4.perspective(angle,1,.1,10,pMatrix);
 	mat4.multiply(pMatrix,World,vWorld);
@@ -105,15 +117,44 @@ function keyboardEvent(event){
 	mat4.translate(cMatrix4,[.5/rat,0,0]);
 
   }
-  else if (event.keyCode == 72){
+  else if (event.keyCode == 55){
 	mat4.rotate(rMatrix4,3.14/5,[0,1,0]);
   }
-else if (event.keyCode == 80){
+else if (event.keyCode == 56){
 	mat4.rotate(rMatrix5,3.14/5,[0,1,0]);
   }
-else if (event.keyCode == 82){
-	mat4.rotate(rMatrix1,3.14/5,[0,0,1]);
+else if (event.keyCode == 57){
+	mat4.rotate(rMatrix1,3.14/5,[1,0,0]);
   }
+else if (event.keyCode == 49){
+	eye[1]+=0.1;
+	point[1]+=0.1;
+	World = mat4.lookAt(eye,point,up);
+	mat4.perspective(angle,1,.1,10,pMatrix);
+	mat4.multiply(pMatrix,World,vWorld);
+  }
+else if (event.keyCode ==50){
+	eye[1]-=0.1;
+	point[1]-=0.1;
+	World = mat4.lookAt(eye,point,up);
+	mat4.perspective(angle,1,.1,10,pMatrix);
+	mat4.multiply(pMatrix,World,vWorld);
+  }
+else if (event.keyCode == 51){
+	eye[0]+=0.1;
+	point[0]+=0.1;
+	World = mat4.lookAt(eye,point,up);
+	mat4.perspective(angle,1,.1,10,pMatrix);
+	mat4.multiply(pMatrix,World,vWorld);
+  }
+else if (event.keyCode == 52){
+	eye[0]-=0.1;
+	point[0]-=0.1;
+	World = mat4.lookAt(eye,point,up);
+	mat4.perspective(angle,1,.1,10,pMatrix);
+	mat4.multiply(pMatrix,World,vWorld);
+  }
+  scene_f = 1;
   drawScene();
  }
 	
@@ -158,20 +199,22 @@ vertices = [
 ];
 
 colors = []
-for (var i=0;i<4;i++) colors = colors.concat([1,1,0,1])
+for (var i=0;i<24;i++) colors = colors.concat(col)
+/*for (var i=0;i<4;i++) colors = colors.concat([0,1,0,1])
 for (var i=0;i<4;i++) colors = colors.concat([1,0,0,1])
 for (var i=0;i<4;i++) colors = colors.concat([0,0,1,1])
-for (var i=0;i<4;i++) colors = colors.concat([0,1,0,1])
-for (var i=0;i<4;i++) colors = colors.concat([0,0,1,1])
-for (var i=0;i<4;i++) colors = colors.concat([1,1,0,1])
+for (var i=0;i<4;i++) colors = colors.concat([1,0,1,1])
+for (var i=0;i<4;i++) colors = colors.concat([1,0,0,1])
+for (var i=0;i<4;i++) colors = colors.concat([0,0,0,1])
+*/
 
 
-indices = [0,  1,  2,      0,  2,  3,    // front
-    4,  5,  6,      4,  6,  7,    // back
-    8,  9,  10,     8,  10, 11,   // top
-    12, 13, 14,     12, 14, 15,   // bottom
-    16, 17, 18,     16, 18, 19,   // right
-    20, 21, 22,     20, 22, 23,   // left
+indices = [0,  1,  2,      0,  2,  3,  
+    4,  5,  6,      4,  6,  7,    
+    8,  9,  10,     8,  10, 11,   
+    12, 13, 14,     12, 14, 15,   
+    16, 17, 18,     16, 18, 19,   
+    20, 21, 22,     20, 22, 23,
   ];
 
 
@@ -188,9 +231,21 @@ vertices = [
 
 
 colors = []
-	for (i=0;i<24;i++){
-		colors = colors.concat(col);
-	}
+
+
+if (button!=1){
+colors = colors.concat(col); colors = colors.concat(sqr[0]*0.7);
+colors = colors.concat(col); colors = colors.concat(sqr[1]*.7);
+colors = colors.concat(col); colors = colors.concat(sqr[2]*.7);
+colors = colors.concat(col); colors = colors.concat(sqr[3]*.7);
+}
+
+else{
+colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
+colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
+colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
+colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
+}
 
 indices = [
     0,  1,  2,      0,  2,  3,
@@ -211,20 +266,45 @@ indices = [
     }
 
 
+ function populate(vMatrix){
+     for (var i=0;i<population;i++){
+	c  = cube(col = pop_col[i]);
+	mMatrix = mat4.create();
+	mat4.identity(mMatrix);
+	mat4.translate(mMatrix,[pop_cor[i*2+0],pop_cor[i*2+1],-0.1]);
+	mat4.rotate(mMatrix,3.14/pop_ang[i],[pop_ax[i][0],pop_ax[i][1],pop_ax[i][2]]);
+	mat4.scale(mMatrix,[pop_scl[i][0],pop_scl[i][1],pop_scl[i][2]])
+	mvMatrix = mat4.create();
+	mat4.multiply(vMatrix,mMatrix,mvMatrix);
+	redraw(mvMatrix);
+     }
+
+}
+
+function buttonEvent(arg){ /** Handles Button Events **/
+   button = arg;
+   if( arg==0)
+	{population+=5;
+         initPop();
+	}
+    else if (arg==1) population = 10
+   drawScene();
+}
+
    function drawFloor(n,vMatrix){
 	rec_size = 10;
 	for (var t = 0;t<4;t++){
 	for ( var i=0;i<n;i++){
 		for ( var j = 0;j<n;j++){
-		c  = square(col = [i%2,(i+j)%2,j%2,0.2]);
+		c  = square(col = [i*1.2%4,0.23*(i*j)%3.3,0.6-j*0.2%4]);
 		mMatrix = mat4.create();
 		mat4.identity(mMatrix);
 		if (t==0){
-		mat4.translate(mMatrix,[rec_size*i/rat,rec_size*j/rat,-.01])
+		mat4.translate(mMatrix,[rec_size*i/rat,rec_size*j/rat,-.002])
 		}
-		else if (t==1) mat4.translate(mMatrix,[-rec_size*i/rat,-rec_size*j/rat,-.01])
-		else if (t==2) mat4.translate(mMatrix,[-rec_size*i/rat,rec_size*j/rat,-.01])
-		else mat4.translate(mMatrix,[rec_size*i/rat,-rec_size*j/rat,-0.01])
+		else if (t==1) mat4.translate(mMatrix,[-rec_size*i/rat,-rec_size*j/rat,-.002])
+		else if (t==2) mat4.translate(mMatrix,[-rec_size*i/rat,rec_size*j/rat,-.002])
+		else mat4.translate(mMatrix,[rec_size*i/rat,-rec_size*j/rat,-0.002])
 		mvMatrix = mat4.create();
 		mat4.multiply(vMatrix,mMatrix,mvMatrix);
 
@@ -234,6 +314,7 @@ indices = [
 	}
 	
    }
+	
 
    function drawScope(vMatrix){
 	c  = square(col = [1,0,0,1]);
@@ -247,6 +328,8 @@ indices = [
 	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
 	indices = [0,1,1,2,2,3,3,0]
+	colors = []
+	for (var i=0;i<4;i++) colors = colors.concat([1,0,0,1])
 	initBuffers()
 	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
@@ -287,7 +370,7 @@ function drawWorld(vmatrix){
 
 //Frame
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [23/255,73/255,148/255,0]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -299,7 +382,7 @@ mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
 
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [23/255,73/255,148/255,0]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -313,7 +396,7 @@ mat4.translate(mvMatrix,[0,0,0]);
 redraw(mvMatrix);
 
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [23/255,73/255,148/255,0]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -328,7 +411,7 @@ mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
 
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [23/255,73/255,148/255,0]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -340,7 +423,7 @@ mat4.scale(mMatrix,[1.155,0.1,0.1]);
 mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [23/255,73/255,148/255,0]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -352,7 +435,7 @@ redraw(mvMatrix);
 
 //Handle
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [23/255,73/255,148/255,0]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix2,mMatrix)
@@ -364,7 +447,7 @@ mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
 
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [68/255,112/255,24/255,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix2,mMatrix)
@@ -380,7 +463,7 @@ redraw(mvMatrix);
 
 
 for( var i=1;i<=6;i++){
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [0,0,0,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix3,mMatrix)
@@ -390,6 +473,7 @@ mat4.translate(mMatrix,[0.1/rat,1.4/rat,1.15/rat]);
 mat4.rotate(mMatrix,3.14/6,[1,0,0]);
 mat4.multiply(mMatrix,rMatrix3,mMatrix);
 mat4.rotate(mMatrix,0+i*3.14/6,[1,0,0])
+mat4.multiply(mMatrix,rMatrix1,mMatrix);
 mat4.scale(mMatrix,[0.1,0.5,0.5]);
 mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
@@ -397,7 +481,7 @@ redraw(mvMatrix);
 
 
 for( var i=1;i<=6;i++){
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [0,0,0,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix3,mMatrix)
@@ -407,6 +491,7 @@ mat4.translate(mMatrix,[0.1/rat,-2.9/rat,1.15/rat]);
 mat4.rotate(mMatrix,3.14/6,[1,0,0]);
 mat4.multiply(mMatrix,rMatrix3,mMatrix);
 mat4.rotate(mMatrix,0+i*3.14/6,[1,0,0])
+mat4.multiply(mMatrix,rMatrix1,mMatrix);
 mat4.scale(mMatrix,[0.1,0.5,0.5]);
 mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
@@ -414,7 +499,7 @@ redraw(mvMatrix);
 
 //Pedals
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [0,0,0,0.8]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -426,7 +511,7 @@ mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
 
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [118/255,17/255,74/255,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -441,7 +526,7 @@ mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
 
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [118/255,17/255,74/255,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -455,7 +540,7 @@ mat4.scale(mMatrix,[0.02,0.02,0.2]);
 mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [255/255,109/255,18/255,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -469,7 +554,7 @@ mat4.multiply(vmatrix,mMatrix,mvMatrix);
 redraw(mvMatrix);
 
 
-c  = cube(col = [1,0,0,0.8]);
+c  = cube(col = [255/255,109/255,18/255,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
@@ -499,16 +584,20 @@ gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
 
 
-    function drawScene() { /** Draws Scene **/ 
+
+    function drawScene() { /** Draws Scene **/
+	if (button == 1) initPop();
 	var n = 5;
 	gl.enable(gl.DEPTH_TEST);
-	rat =20;
+	rat =50;
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	populate(vWorld);
 	drawFloor(n,vWorld);
 	drawWorld(vWorld);
-	rat =30;
+	rat =50;
 	gl.viewport(gl.viewportWidth*0.7, gl.viewportHeight*0.7,gl.viewportWidth*.3, gl.viewportHeight*.3);
+	populate(vMap);
 	drawFloor(n,vMap);
 	drawWorld(vMap);
 	drawScope(vMap);
@@ -550,8 +639,29 @@ gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	return vertices
  }
 
+ function rand(min,max){
+return Math.random() * (max - min) + min;
+}
+
+  function initPop(){
+  pop_cor = []
+ pop_ang = []
+ pop_scl = [] 
+ pop_ax = []
+ pop_col = []
+for (var i=0;i<population;i++){
+ 		pop_cor=pop_cor.concat([rand(-40,40)/rat,rand(-40,40)/rat]);
+		pop_ang.push([Math.random()*10]);
+		pop_ax.push([Math.random(),Math.random(),Math.random()]);
+		pop_scl.push([Math.random()*1,Math.random()*5,Math.random()*5]);
+		pop_col.push([Math.random(),Math.random(),Math.random(),1])
+	}
+
+ }
 
     function webGLStart() {
+	initPop();
+       for (var i=0;i<4;i++) sqr.push(Math.random()+0.5)
         var canvas = document.getElementById("lab2-canvas");
         initGL(canvas);
         initShaders();
@@ -564,9 +674,9 @@ gl.drawElements(gl.TRIANGLES, VertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	
 	document.addEventListener('keydown', keyboardEvent, false);
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+	
 
-
-        gl.clearColor(1, 1, 1, 1);
+        gl.clearColor(70/255, 243/255, 243/255, 1);
 
         drawScene();
     }
