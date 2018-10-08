@@ -42,7 +42,14 @@ vertices = [
 ];
 
 colors = []
-for (var i=0;i<24;i++) colors = colors.concat(col)
+//for (var i=0;i<24;i++) colors = colors.concat(col)
+
+for (var i=0;i<4;i++) colors = colors.concat([1,0,0,1])
+for (var i=0;i<4;i++) colors = colors.concat([46/255,105/255,22/255,1])
+for (var i=0;i<4;i++) colors = colors.concat([0,0,0,1])
+for (var i=0;i<4;i++) colors = colors.concat([1,0,0,1])
+for (var i=0;i<4;i++) colors = colors.concat([0,1,1,1])
+for (var i=0;i<4;i++) colors = colors.concat([0,0,0,1])
 
 
 indices = [0,  1,  2,      0,  2,  3,  

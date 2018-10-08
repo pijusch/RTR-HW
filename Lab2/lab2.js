@@ -155,96 +155,7 @@ else if (event.keyCode == 52){ // Camera Right
   scene_f = 1;
   drawScene();
  }
-	
-/*
-function cube(col){ // Generates a cube at origin with given color
-vertices = [
-// Front face
-  -1.0, 1.0,  -1.0,
-   1.0, 1.0,  -1.0,
-   1.0,  1.0,  1.0,
-  -1.0,  1.0,  1.0,
-  
-  // Back face
-  -1.0, -1.0, -1.0,
-  -1.0,  -1.0, 1.0,
-   1.0,  -1.0, 1.0,
-   1.0, -1.0, -1.0,
-  
-  // Top face
-  -1.0,  -1.0, 1.0,
-  -1.0,  1.0,  1.0,
-   1.0,  1.0,  1.0,
-   1.0,  -1.0, 1.0,
-  
-  // Bottom face
-  -1.0, -1.0, -1.0,
-   1.0, -1.0, -1.0,
-   1.0, 1.0,  -1.0,
-  -1.0, 1.0,  -1.0,
-  
-  // Right face
-   1.0, -1.0, -1.0,
-   1.0,  -1.0, 1.0,
-   1.0,  1.0,  1.0,
-   1.0, 1.0,  -1.0,
-  
-  // Left face
-  -1.0, -1.0, -1.0,
-  -1.0, 1.0, -1.0,
-  -1.0,  1.0,  1.0,
-  -1.0,  -1.0, 1.0,
-];
 
-colors = []
-for (var i=0;i<24;i++) colors = colors.concat(col)
-
-
-indices = [0,  1,  2,      0,  2,  3,  
-    4,  5,  6,      4,  6,  7,    
-    8,  9,  10,     8,  10, 11,   
-    12, 13, 14,     12, 14, 15,   
-    16, 17, 18,     16, 18, 19,   
-    20, 21, 22,     20, 22, 23,
-  ];
-
-
-}
-
- function square(col){  // genrates a square at origin (no z component (0)) with given color
-			// Plus added lighting effect
-vertices = [
-   -5.0,  -5.0, 0,
-   -5.0,  5.0,  0,
-    5.0,  5.0,  0,
-    5.0,  -5.0, 0,
-  
-];	
-
-
-colors = []
-
-
-if (button!=1){
-colors = colors.concat(col); colors = colors.concat(sqr[0]*0.7); //lighting effect using different transparency values
-colors = colors.concat(col); colors = colors.concat(sqr[1]*.7);
-colors = colors.concat(col); colors = colors.concat(sqr[2]*.7);
-colors = colors.concat(col); colors = colors.concat(sqr[3]*.7);
-}
-
-else{
-colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
-colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
-colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
-colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
-}
-
-indices = [
-    0,  1,  2, 0,  2,  3,
-  ];
-
- }
-*/
  function initGL(canvas) { /** Gets Canvas **/
         try {
             gl = canvas.getContext("webgl");
@@ -428,7 +339,7 @@ redraw(mvMatrix);
 //Wheels
 
 
-for( var i=1;i<=6;i++){
+for( var i=1;i<=2;i++){
 c  = cube(col = [0,0,0,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
@@ -446,7 +357,7 @@ redraw(mvMatrix);
 }
 
 
-for( var i=1;i<=6;i++){
+for( var i=1;i<=2;i++){
 c  = cube(col = [0,0,0,1]);
 mMatrix = mat4.create();
 mat4.identity(mMatrix);
@@ -454,7 +365,7 @@ mat4.multiply(mMatrix,cMatrix3,mMatrix)
 mat4.translate(mMatrix,[0.0,0,-2/rat]);
 mat4.rotate(mMatrix,3.14/2,[0,0,1]);
 mat4.translate(mMatrix,[0.1/rat,-2.9/rat,1.15/rat]);
-mat4.rotate(mMatrix,3.14/6,[1,0,0]);
+mat4.rotate(mMatrix,3.14/8,[1,0,0]);
 mat4.multiply(mMatrix,rMatrix3,mMatrix);
 mat4.rotate(mMatrix,0+i*3.14/6,[1,0,0])
 mat4.multiply(mMatrix,rMatrix1,mMatrix);
