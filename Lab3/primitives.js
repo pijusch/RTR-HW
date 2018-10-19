@@ -25,7 +25,7 @@ function draw_area(n,radius,z){
 	
 	rl = []
 	for (var i=0;i<n;i++){
-		rl.push([radius*Math.cos(2*3.14*i/n)/10,radius*Math.sin(2*3.14*i/n)/10,z/10])
+		rl.push([radius*Math.cos(2*3.14*i/n-3.14/4)/10,radius*Math.sin(2*3.14*i/n-3.14/4)/10,z/10-n/20])
 	}
 	return rl
 }
@@ -35,6 +35,7 @@ function draw3D(shape,radius,n){
 	colors = []
 	vertices = []
 	indices = []
+	normals = []
 
 	c = 0
 	o = draw_area(n,get_radius(shape,0,n,radius),0)
@@ -51,14 +52,16 @@ function draw3D(shape,radius,n){
 		}
 		o = t
 	}
-	for (var i=0;i<vertices.length;i++){
-		if(shape[0]==0){ normals = vertices
+	i=0;
+	while(i<vertices.length){
+		if(shape[0]==0){ 
+			normals = vertices
 				break
 		}
 		else if (shape[0]==1 || shape[0] ==2){
 			normals = normals.concat([vertices[i],vertices[i+1],0])
-			i+=2
 		}
+		i+=3
 	}
 
 }

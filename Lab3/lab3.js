@@ -10,7 +10,8 @@ Vertices and Indices for Cube
 
 /**Global Variables)
 **/
-
+var lastMouseX;
+var lastMOuseY;
 
  var mMatrix = mat4.create();  // model matrix
     var vMatrix = mat4.create(); // view matrix
@@ -21,7 +22,7 @@ Vertices and Indices for Cube
   var light_ambient = [1,0,0,1]; 
   var light_diffuse = [.8,.8,.8,1];
   var light_specular = [1,1,1,1]; 
-  var light_pos = [0,0,0,1];   // eye space position 
+  var light_pos = [0,-5/10,0,1];   // eye space position 
 
   var mat_ambient = [0, 0, 0, 1]; 
   var mat_diffuse= [1, 1, 0, 1]; 
@@ -98,15 +99,11 @@ mat4.multiply(pMatrix,World,vWorld); // Clip View Transformation
 
 function keyboardEvent(event){
   if (event.keyCode == 87){	//Move Left
-	mat4.translate(cMatrix1,[0,.5/rat,0]);
+	mat4.translate(cMatrix1,[0,0.5/rat,0])
 
   }
   else if (event.keyCode == 83){ //Move Right
-	mat4.translate(cMatrix1,[0,-.5/rat,0]);
-	mat4.translate(cRed,[0,-.5/rat,0]);
-	mat4.translate(cMatrix2,[0,-.5/rat,0]);
-	mat4.translate(cMatrix3,[0,-.5/rat,0]);
-	mat4.translate(cMatrix4,[0,-.5/rat,0]);
+	mat4.translate(cMatrix1,[0,-0.5/rat,0])
   }
   else if( event.keyCode == 53||event.keyCode == 54){ //Zoom in and out
 	if(event.keyCode == 53) angle+=5;
@@ -114,29 +111,15 @@ function keyboardEvent(event){
 	mat4.perspective(angle,1,.1,10,pMatrix);
 	mat4.multiply(pMatrix,World,vWorld);
   }
-  else if (event.keyCode == 68){ //Move Backward
+  else if (event.keyCode == 68){ //Move Right
 	mat4.translate(cMatrix1,[-.5/rat,0,0]);
-	mat4.translate(cRed,[-.5/rat,0,0]);
-	mat4.translate(cMatrix2,[-.5/rat,0,0]);
-	mat4.translate(cMatrix3,[-.5/rat,0,0]);
-	mat4.rotate(rMatrix3,3.14/5,[1,0,0]);
-	mat4.rotate(rMatrix4,3.14/5,[0,1,0]);
-	mat4.rotate(rMatrix5,-3.14/5,[0,1,0]);
-	mat4.translate(cMatrix4,[-.5/rat,0,0]);
   }
-  else if (event.keyCode == 65){	//Move Forward
+  else if (event.keyCode == 65){	//Move left
 	mat4.translate(cMatrix1,[.5/rat,0,0]);
-	mat4.translate(cRed,[.5/rat,0,0]);
-	mat4.translate(cMatrix2,[.5/rat,0,0]);
-	mat4.translate(cMatrix3,[.5/rat,0,0]);
-	mat4.rotate(rMatrix3,-3.14/5,[1,0,0]);
-	mat4.rotate(rMatrix4,-3.14/5,[0,1,0]);
-	mat4.rotate(rMatrix5,3.14/5,[0,1,0]);
-	mat4.translate(cMatrix4,[.5/rat,0,0]);
 
   }
   else if (event.keyCode == 55){  // Rotate Arms
-		mat4.rotate(rMatrix1,3.14/100,[0,0,1])
+		mat4.rotate(rMatrix1,3.14/10,[0,0,1])
   }
 else if (event.keyCode == 56){    // Rotate Pedals
 	mat4.rotate(rMatrix5,3.14/5,[0,1,0]);
@@ -145,17 +128,17 @@ else if (event.keyCode == 57){ // Rotate Wheels
 	mat4.rotate(rMatrix1,3.14/5,[1,0,0]);
   }
 else if (event.keyCode == 50){  // Camera Down
-		mat4.translate(cMatrix1,[0,0,.5/rat]);
-	eye[2]+=0.1;
-	point[2]+=0.1;
+	mat4.translate(cMatrix1,[0,0,.5/rat]);
+	eye[0]+=0.1;
+	point[0]+=0.1;
 	World = mat4.lookAt(eye,point,up);
 	mat4.perspective(angle,1,.1,10,pMatrix);
 	mat4.multiply(pMatrix,World,vWorld);
   }
 else if (event.keyCode ==49){   // Camera Up
-		mat4.translate(cMatrix1,[0,0,-.5/rat]);
-	eye[2]-=0.1;
-	point[2]-=0.1;
+	mat4.translate(cMatrix1,[0,0,-.5/rat]);
+	eye[0]-=0.1;
+	point[0]-=0.1;
 	World = mat4.lookAt(eye,point,up);
 	mat4.perspective(angle,1,.1,10,pMatrix);
 	mat4.multiply(pMatrix,World,vWorld);
@@ -236,20 +219,265 @@ function setMatrixUniforms() {
     }
 
 
-function drawWorld(vmatrix){ // Cycle Model (not using stack for this assignment, since not asked in the question)
+function drawTree(cMatrix){	//At random tree shape
 
-shape = [1,4]
-c  = draw3D(shape,radius = 5, n = 10);
-
+shape = [2,2]
+c  = draw3D(shape,radius = 2, n = 4);
 mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix,mMatrix)
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.scale(mMatrix,[0.2,0.2,0.2])
+mat4.scale(mMatrix,[2,2,2])
+mat4.scale(mMatrix,[0.1,0.1,0.6])
+redraw();
+
+shape = [0,2]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix,mMatrix)
+mat4.translate(mMatrix,[0,0,-.2])
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.scale(mMatrix,[5,5,5])
+mat4.scale(mMatrix,[0.1,0.1,0.1])
 redraw();
 
 
 }
 
+
+function drawCastle(){
+
+shape = [1,1]
+c  = draw3D(shape,radius = 2, n = 4);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[7,0.3,4])
+redraw();
+
+shape = [1,1]
+c  = draw3D(shape,radius = 2, n = 4);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[0,.2,0])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[7,0.3,4])
+redraw();
+
+
+shape = [1,1]
+c  = draw3D(shape,radius = 2, n = 4);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.rotate(mMatrix,3.14/2,[0,0,1])
+mat4.translate(mMatrix,[.1,.1,0])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[7,.3,4])
+redraw();
+
+
+shape = [1,1]
+c  = draw3D(shape,radius = 2, n = 4);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.rotate(mMatrix,3.14/2,[0,0,1])
+mat4.translate(mMatrix,[.1,-.1,0])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[7,.3,4])
+redraw();
+
+
+
+
+
+
+
+
+shape = [2,2]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[.1,0,-.15])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[7,7,2])
+redraw();
+
+
+shape = [1,1]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[.1,0,-.02])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[1,1,2])
+redraw();
+
+
+
+shape = [2,2]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[-.1,0,-.15])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[7,7,2])
+redraw();
+
+shape = [1,1]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[-.1,0,-.02])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[1,1,2])
+redraw();
+
+
+
+
+shape = [2,2]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[.1,0.2,-.15])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[7,7,2])
+redraw();
+
+shape = [1,1]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[.1,0.2,-.02])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[1,1,2])
+redraw();
+
+
+
+shape = [2,2]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[-.1,.2,-.15])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[7,7,2])
+redraw();
+
+shape = [1,1]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[-.1,.2,-.02])
+mat4.scale(mMatrix,[.1,.1,.1])
+mat4.scale(mMatrix,[1,1,2])
+redraw();
+
+}
+
+function drawWorld(){ // Cycle Model (not using stack for this assignment, since not asked in the question)
+
+drawCastle()
+
+temp = mat4.create()
+mat4.identity(temp)
+mat4.multiply(temp,cMatrix1,temp)
+mat4.translate(temp,[0,-.3,0])
+mat4.scale(temp,[.1,.1,.1])
+drawTree(temp)
+
+return
+
+
+shape = [0,1]
+c  = draw3D(shape,radius = 2, n = 4);
+mat4.identity(mMatrix);
+mat4.translate(mMatrix,[0.1,0,0])
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.scale(mMatrix,[0.1,0.1,.1])
+redraw();
+
+shape = [0,1]
+c  = draw3D(shape,radius = 4, n = 8);
+mat4.identity(mMatrix);
+mat4.translate(mMatrix,[0.1,0,0])
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.scale(mMatrix,[0.01,0.01,.01])
+redraw();
+
+
+
+}
+
+
+ function onDocumentMouseDown( event ) {
+          event.preventDefault();
+          document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+          document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+          document.addEventListener( 'mouseout', onDocumentMouseOut, false );
+          var mouseX = event.clientX;
+          var mouseY = event.clientY;
+
+          lastMouseX = mouseX;
+          lastMouseY = mouseY; 
+
+      }
+
+function zfunction(arg){
+	
+if (arg>0)
+	return 1
+else if(arg<0)
+	return -1
+else return 0
+
+}
+
+function onDocumentMouseMove( event ) {
+
+          var mouseX = event.clientX;
+          var mouseY = event.ClientY; 
+
+
+          var diffX = mouseX - lastMouseX;
+          var diffY = mouseY - lastMouseY;
+
+          //Z_angle = Z_angle + diffX/5;
+
+          lastMouseX = mouseX;
+          lastMouseY = mouseY;
+	
+	  mat4.translate(cMatrix1,[zfunction(diffX)/100,0,zfunction(diffY)/100])
+	  
+          drawScene();
+     }
+
+     function onDocumentMouseUp( event ) {
+          document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
+          document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
+          document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+     }
+
+     function onDocumentMouseOut( event ) {
+          document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
+          document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
+          document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+     }
 
 function redraw(){ //Buffer initiallization when objects are drawn
 
@@ -335,6 +563,7 @@ gl.drawElements(gl.LINES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
         gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
 	
 	document.addEventListener('keydown', keyboardEvent, false);
+	document.addEventListener('mousedown', onDocumentMouseDown, false);
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 
 	shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
