@@ -2,7 +2,6 @@ var vertices = []
 var indices = []
 var lindices = []
 var colors = []
-var lcolors = []
 var normals = []
 
 /**draw3D function
@@ -31,10 +30,9 @@ function draw_area(n,radius,z){
 }
 
 function draw3D(shape,radius,n){
-	lindices = []
-	colors = []
 	vertices = []
 	indices = []
+	lindices = []
 	normals = []
 
 	c = 0
@@ -44,11 +42,8 @@ function draw3D(shape,radius,n){
 		for (var j = 0;j<n;j++){
 			vertices = vertices.concat(o[j],o[(j+1)%n],t[j],t[(j+1)%n])
 			indices = indices.concat([c,c+1,c+2,c+1,c+2,c+3])
-			lindices = lindices.concat([c,c+2,c+2,c+3,c+1,c+3,c+1,c,c,c+3])
+			lindices = lindices.concat([c,c+1,c+1,c+3,c+3,c+2,c+2,c])
 			c+=4
-			for(var k=0;k<4;k++){ colors = colors.concat([1,0,0,0.1+i/n])
-					      lcolors = lcolors.concat([0,0,0,1])
-					     }
 		}
 		o = t
 	}
