@@ -2,6 +2,33 @@
 
 /**Global Variables
 **/
+
+
+var sampleTexture; 
+
+function initTextures() {
+    sampleTexture = gl.createTexture();
+    sampleTexture.image = new Image();
+    sampleTexture.image.onload = function() { handleTextureLoaded(sampleTexture); }
+    sampleTexture.image.src = "brick.png";    
+    console.log("loading texture....") 
+}
+
+function handleTextureLoaded(texture) {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+
+
+var restrict = []
+var danger = []
+
+
+
 var prev_ndc = 1
 var line_switch = 0
 var back_color = [0/255, 255/255, 255/255, 1]
@@ -111,9 +138,17 @@ else if (event.keyCode ==75){   // Sphere front
 	mat4.translate(cMatrixS,[0,-0.5/rat,0]);
 	mat4.rotate(rMatrixS,3.14/3,[1,0,0]);
   }
-else if (event.keyCode ==76){   // Sphere Back
+else if (event.keyCode ==73){   // Sphere Back
 	mat4.translate(cMatrixS,[0,0.5/rat,0]);
 	mat4.rotate(rMatrixS,-3.14/3,[1,0,0]);
+  }
+else if (event.keyCode ==74){   // Sphere front
+	mat4.translate(cMatrixS,[.5/rat,0,0]);
+	mat4.rotate(rMatrixS,3.14/3,[0,1,0]);
+  }
+else if (event.keyCode ==76){   // Sphere Back
+	mat4.translate(cMatrixS,[-0.5/rat,0,0]);
+	mat4.rotate(rMatrixS,-3.14/3,[0,1,0]);
   }
   drawScene();
  }
@@ -620,18 +655,32 @@ mat_specular  = [.9,.9,.9,1]
 
 function drawWorld(){
 
-drawCastle()
+//drawCastle()
 
-for (var i=0;i<tree_cd.length;i++){
-	drawTree([tree_cd[i*3+0],tree_cd[i*3+1],0],[tree_sh[i*3+0],tree_sh[i*3+1],tree_sh[i*3+2]],[tree_3dsh[i*2+0],tree_3dsh[i*2+1]])
-}
+//for (var i=0;i<tree_cd.length;i++){
+//	drawTree([tree_cd[i*3+0],tree_cd[i*3+1],0],[tree_sh[i*3+0],tree_sh[i*3+1],tree_sh[i*3+2]],[tree_3dsh[i*2+0],tree_3dsh[i*2+1]])
+//}
 
-drawMountains()
-if (y_ndc<0)
-	drawMoon()
-else
-	drawSun()
-drawFloor()
+//drawMountains()
+//if (y_ndc<0)
+//	drawMoon()
+//else
+//	drawSun()
+
+
+
+//drawFloor()
+
+
+//shape =[0]
+
+//c = draw3D(shape,radius=3,n = 6)
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.scale(mMatrix,[.1,.1,.1])
+square()
+redraw()
 }
 
 
@@ -658,7 +707,7 @@ function onDocumentMouseMove( event ) {
           var mouseX = event.clientX;
           var mouseY = event.clientY; 
 	
-	if(mouseX>gl.viewportWidth ||mouseY>gl.viewportHeight) return
+/*	if(mouseX>gl.viewportWidth ||mouseY>gl.viewportHeight) return
 
 	light_pos[0] = ndc(mouseX,0,gl.viewportWidth)
 	y_ndc = -1*ndc(mouseY,0,gl.viewportHeight)
@@ -672,7 +721,7 @@ function onDocumentMouseMove( event ) {
 
 
 	  
-          drawScene();
+          drawScene();*/
      }
 
 
@@ -706,6 +755,9 @@ gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuff
 
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
 gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, vertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+//gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexTextureCoordBuffer);
+//gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, teapotVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
 
@@ -781,6 +833,9 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
         shaderProgram.light_diffuseUniform = gl.getUniformLocation(shaderProgram, "light_diffuse");
         shaderProgram.light_specularUniform = gl.getUniformLocation(shaderProgram, "light_specular");
 
+	shaderProgram.textureUniform = gl.getUniformLocation(shaderProgram, "myTexture");
+        shaderProgram.use_textureUniform = gl.getUniformLocation(shaderProgram, "use_texture");
+
         drawScene();
     }
 
@@ -803,4 +858,10 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
     vertexNormalBuffer.itemSize = 3;
     vertexNormalBuffer.numItems = normals.length/3;
+
+   vertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+    vertexNormalBuffer.itemSize = 2;
+    vertexNormalBuffer.numItems = normals.length/2;
    }
