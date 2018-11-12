@@ -21,6 +21,7 @@ function get_radius(shape,i,n,radius){
 	}
 }
 
+
 function draw_area(n,radius,z){
 	
 	rl = []
@@ -35,6 +36,7 @@ function draw3D(shape,radius,n){
 	indices = []
 	lindices = []
 	normals = []
+	textureCoords = []
 
 	c = 0
 	o = draw_area(n,get_radius(shape,0,n,radius),0)
@@ -42,12 +44,16 @@ function draw3D(shape,radius,n){
 		t = draw_area(n,get_radius(shape,i,n,radius),i)
 		for (var j = 0;j<n;j++){
 			vertices = vertices.concat(o[j],o[(j+1)%n],t[j],t[(j+1)%n])
+			jj = j
+			ii = i
+			textureCoords = textureCoords.concat([jj/(n),(ii-1)/(n),((jj+1))/(n),(ii-1)/(n),jj/(n),(ii)/(n),((jj+1))/(n),(ii)/(n)])
 			indices = indices.concat([c,c+1,c+2,c+1,c+2,c+3])
 			lindices = lindices.concat([c,c+1,c+1,c+3,c+3,c+2,c+2,c])
 			c+=4
 		}
 		o = t
 	}
+
 	i=0;
 	while(i<vertices.length){
 		if(shape[0]==0){ 
@@ -55,11 +61,14 @@ function draw3D(shape,radius,n){
 				break
 		}
 		else if (shape[0]==1 || shape[0] ==2){
-			normals = normals.concat([vertices[i],vertices[i+1],0])
+			normals = normals.concat([vertices[i]+vertices[i+3],vertices[i+1]+vertices[i+4],0])
+			normals = normals.concat([vertices[i]+vertices[i+3],vertices[i+1]+vertices[i+4],0])
+			i+=3
+			//normals = get_normal(n,radius)
+			//	break
 		}
 		i+=3
 	}
-
 }
 
 
@@ -96,8 +105,8 @@ indices = [
     0,  1,  2, 0,  2,  3,
   ];
 
-normals = vertices
+normals = [0,0,1,0,0,1,0,0,1,0,0,1]
 
-textureCoords = [0,0,0,1,1,1,1,0]
+textureCoords = [0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0]
 
  }

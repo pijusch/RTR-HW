@@ -4,14 +4,44 @@
 **/
 
 
+
+var cubemapTexture;
+
+function initCubeMap() {
+    cubemapTexture = gl.createTexture();
+    cubemapTexture.image = new Image();
+    cubemapTexture.image.onload = function() { handleCubemapTextureLoaded(cubemapTexture); }
+    cubemapTexture.image.src = "brick.png";
+}    
+function handleCubemapTextureLoaded(texture) {
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.REPEAT); 
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR); 
+
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.image);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.image);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.image);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.image);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.image);
+    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.image);    
+}
+
 var sampleTexture; 
 
 function initTextures() {
     sampleTexture = gl.createTexture();
     sampleTexture.image = new Image();
-    sampleTexture.image.onload = function() { handleTextureLoaded(sampleTexture); }
-    sampleTexture.image.src = "brick.png";    
-    console.log("loading texture....") 
+    sampleTexture.image.onload = function() {handleTextureLoaded(sampleTexture);}
+    sampleTexture.image.src = "brick.png";
 }
 
 function handleTextureLoaded(texture) {
@@ -37,6 +67,7 @@ var back_color = [0/255, 255/255, 255/255, 1]
  var vMatrix = mat4.create(); // view matrix
  var pMatrix = mat4.create();  //projection matrix
  var nMatrix = mat4.create();  // normal matrix
+ var v2wMatrix = mat4.create();
 
 // set up the parameters for lighting 
   var light_ambient = [0,1,0,1]; 
@@ -57,6 +88,7 @@ var vertexPostionBuffer;
 var vertexColorBuffer;
 var vertexIndexBuffer;
 var vertexNormalBuffer;
+var vertexTextureCoordBuffer;
 var eye = [0,-1,-0.2]
 var point = [0,0,0]
 var up = [0,1,0]
@@ -155,7 +187,7 @@ else if (event.keyCode ==76){   // Sphere Back
 
  function initGL(canvas) { /** Gets Canvas **/
         try {
-            gl = canvas.getContext("webgl");
+            gl = canvas.getContext("experimental-webgl");
             gl.viewportWidth = canvas.width;
             gl.viewportHeight = canvas.height;
         } catch (e) {
@@ -185,7 +217,8 @@ function setMatrixUniforms() {
         gl.uniformMatrix4fv(shaderProgram.mMatrixUniform, false, mMatrix);
         gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-        gl.uniformMatrix4fv(shaderProgram.nMatrixUniform, false, nMatrix);	
+        gl.uniformMatrix4fv(shaderProgram.nMatrixUniform, false, nMatrix);
+	gl.uniformMatrix4fv(shaderProgram.v2wMatrixUniform, false, v2wMatrix);
 	
     }
 
@@ -675,12 +708,24 @@ function drawWorld(){
 //shape =[0]
 
 //c = draw3D(shape,radius=3,n = 6)
+
+/*mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.rotate(mMatrix,3.14/2,[1,0,0])
+mat4.scale(mMatrix,[.1,.1,.1])
+square()
+redraw()*/
+
+
+shape =[1]
+c = draw3D(shape,radius=2,n = 4)
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.scale(mMatrix,[.1,.1,.1])
-square()
+mat4.scale(mMatrix,[.5,.5,.5])
 redraw()
+
 }
 
 
@@ -733,6 +778,11 @@ nMatrix = mat4.multiply(nMatrix, mMatrix);
 nMatrix = mat4.inverse(nMatrix);
 nMatrix = mat4.transpose(nMatrix);
 
+mat4.identity(v2wMatrix);
+v2wMatrix = mat4.multiply(v2wMatrix, vMatrix);
+//        v2wMatrix = mat4.inverse(v2wMatrix);     
+v2wMatrix = mat4.transpose(v2wMatrix)
+
 shaderProgram.light_posUniform = gl.getUniformLocation(shaderProgram, "light_pos");
 gl.uniform4f(shaderProgram.light_posUniform,light_pos[0], light_pos[1], light_pos[2], light_pos[3]); 	
 gl.uniform4f(shaderProgram.ambient_coefUniform, mat_ambient[0], mat_ambient[1], mat_ambient[2], 1.0); 
@@ -756,10 +806,19 @@ gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuff
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
 gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, vertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-//gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexTextureCoordBuffer);
-//gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, teapotVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
+gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
+
+gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
+gl.bindTexture(gl.TEXTURE_2D, sampleTexture);    // bind the texture object to the texture unit 
+gl.uniform1i(shaderProgram.textureUniform, 0);
+
+gl.activeTexture(gl.TEXTURE1);   // set texture unit 1 to use 
+gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubemapTexture);    // bind the texture object to the texture unit 
+gl.uniform1i(shaderProgram.cube_map_textureUniform, 1);   // pass the texture unit to the shader
+
 
 if (line_switch)
  gl.drawElements(gl.LINES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0); 					
@@ -813,6 +872,9 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
 	shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
         gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
+	shaderProgram.vertexTexCoordsAttribute = gl.getAttribLocation(shaderProgram, "aVertexTexCoords");
+        gl.enableVertexAttribArray(shaderProgram.vertexTexCoordsAttribute);
 	
 	document.addEventListener('keydown', keyboardEvent, false);
 	document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -821,7 +883,8 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
         shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
 	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-	shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");	
+	shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+	shaderProgram.v2wMatrixUniform = gl.getUniformLocation(shaderProgram, "uV2WMatrix");	
 
         shaderProgram.light_posUniform = gl.getUniformLocation(shaderProgram, "light_pos");
         shaderProgram.ambient_coefUniform = gl.getUniformLocation(shaderProgram, "ambient_coef");	
@@ -834,7 +897,10 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
         shaderProgram.light_specularUniform = gl.getUniformLocation(shaderProgram, "light_specular");
 
 	shaderProgram.textureUniform = gl.getUniformLocation(shaderProgram, "myTexture");
-        shaderProgram.use_textureUniform = gl.getUniformLocation(shaderProgram, "use_texture");
+	shaderProgram.cube_map_textureUniform = gl.getUniformLocation(shaderProgram, "cubeMap");
+	
+	initTextures();
+	initCubeMap();
 
         drawScene();
     }
@@ -859,9 +925,9 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     vertexNormalBuffer.itemSize = 3;
     vertexNormalBuffer.numItems = normals.length/3;
 
-   vertexTextureCoordBuffer = gl.createBuffer();
+    vertexTextureCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
-    vertexNormalBuffer.itemSize = 2;
-    vertexNormalBuffer.numItems = normals.length/2;
+    vertexTextureCoordBuffer.itemSize = 2;
+    vertexTextureCoordBuffer.numItems = textureCoords.length/2;
    }

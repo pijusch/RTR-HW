@@ -15,11 +15,13 @@ precision mediump float;
 
     varying vec3 vaVertexPosition;
     varying vec3 vaVertexNormal;
+    uniform vec3 aVertexNormal;
 
     varying mat4 vuMMatrix; 
     varying mat4 vuVMatrix;
     varying mat4 vuPMatrix;
-    varying mat4 vuNMatrix; 
+    varying mat4 vuNMatrix;
+    uniform mat4 uV2WMatrix;  // eye to world 
 
     varying vec4 vlight_pos; 
     varying vec4 vambient_coef;
@@ -32,14 +34,22 @@ precision mediump float;
     varying vec4 vlight_specular;
  
     varying highp vec2 FtexCoord; 
-    uniform sampler2D myTexture;
+    uniform sampler2D myTexture;	
+   uniform samplerCube cubeMap;
+  varying vec4 vcolor;
 
 void main(void) {
-	//texcolor = texture2D(myTexture, FtexCoord);	
+	vec4 texcolor;
+	vec3 view_vector, ref;
+	vec4 env_color = vec4(1,0,0,1);
 
-	vec4 light_pos_in_eye = vlight_pos;   
+	texcolor = texture2D(myTexture, FtexCoord);
+
+	vec4 light_pos_in_eye = vlight_pos;
 
 	vec3 v_normal =normalize(vec3(vuNMatrix*vec4(vaVertexNormal,1.0)));
+
+	vec3 v_normal2 =normalize(vec3(vuNMatrix*vec4(aVertexNormal,1.0)));
 
         vec4 eye_pos = vuVMatrix*vuMMatrix*vec4(vaVertexPosition, 1.0);
 
@@ -56,13 +66,21 @@ void main(void) {
 	vec3 R = normalize(2.0 * ndotl *v_normal-eye_vector);
         float rdotv = max(dot(R, eye_vector), 0.0);
 
-        vec4 specular;  
+        vec4 specular;
         if (ndotl>0.0) 
-        specular = vspecular_coef* vlight_specular*pow(rdotv, vmat_shininess); 
+        specular = vspecular_coef* vlight_specular*pow(rdotv, vmat_shininess);
         else
         specular = vec4(0,0,0,1);
 
 	gl_FragColor = ambient+specular+diffuse;
+	//gl_FragColor = vec4(FtexCoord, FtexCoord);
+	gl_FragColor = texcolor+specular;
+
+	view_vector = normalize(vec3(vec4(0,0,0,1)-eye_pos));
+          ref = normalize(reflect(-view_vector, v_normal));  // in eye space
+	  ref = vec3(uV2WMatrix*vec4(ref,0));   // convert to world space
+          env_color = textureCube(cubeMap, ref);
+          gl_FragColor = env_color;
 	
 
     }
@@ -75,13 +93,16 @@ void main(void) {
     attribute vec3 aVertexPosition;
     attribute vec3 aVertexNormal;
 
+    attribute vec2 aVertexTexCoords;
+
     varying vec3 vaVertexPosition;
     varying vec3 vaVertexNormal;
 
     uniform mat4 uMMatrix; 
     uniform mat4 uVMatrix;
     uniform mat4 uPMatrix;
-    uniform mat4 uNMatrix; 
+    uniform mat4 uNMatrix;
+    //uniform mat4 uV2WMatrix;  // eye to world 
 
     uniform vec4 light_pos; 
     uniform vec4 ambient_coef;
@@ -93,8 +114,7 @@ void main(void) {
     uniform vec4 light_diffuse; 
     uniform vec4 light_specular;
 
-    uniform int use_texture; 
-   uniform sampler2D myTexture;
+   //uniform sampler2D myTexture;
 
 
     varying mat4 vuMMatrix; 
@@ -113,6 +133,8 @@ void main(void) {
     varying vec4 vlight_specular;
     varying highp vec2 FtexCoord;
 
+    varying vec4 vcolor;
+
     varying vec3 v_normal;  // vertex normal
 	
 
@@ -122,6 +144,7 @@ vuMMatrix = uMMatrix;
 vuVMatrix = uVMatrix;
 vuPMatrix = uPMatrix;
 vuNMatrix = uNMatrix; 
+
 
 vlight_pos = light_pos; 
 vambient_coef = ambient_coef;
@@ -133,9 +156,11 @@ vlight_ambient = light_ambient;
 vlight_diffuse = light_diffuse; 
 vlight_specular = light_specular;
 
+
 vaVertexPosition = aVertexPosition;
 vaVertexNormal = aVertexNormal;
   
+FtexCoord = aVertexTexCoords; 
 gl_Position = uPMatrix*uVMatrix*uMMatrix*vec4(aVertexPosition, 1.0);
 	
     
