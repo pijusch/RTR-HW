@@ -4,16 +4,36 @@
 **/
 
 
-
+var use_texture = 0; 
+var use_dnd = 0;
+var add_light = 0;
+var add_ambient = 0;
 var cubemapTexture;
+var image_num = 0;
+
 
 function initCubeMap() {
     cubemapTexture = gl.createTexture();
-    cubemapTexture.image = new Image();
-    cubemapTexture.image.onload = function() { handleCubemapTextureLoaded(cubemapTexture); }
-    cubemapTexture.image.src = "brick.png";
+    cubemapTexture.i1 = new Image();
+cubemapTexture.i2 = new Image();
+cubemapTexture.i3 = new Image();
+cubemapTexture.i4 = new Image();
+cubemapTexture.i5 = new Image();
+cubemapTexture.i6 = new Image();
+    cubemapTexture.i1.onload = function() { handleCubemapTextureLoaded(cubemapTexture,1); }
+cubemapTexture.i2.onload = function() { handleCubemapTextureLoaded(cubemapTexture,2); }
+cubemapTexture.i3.onload = function() { handleCubemapTextureLoaded(cubemapTexture,3); }
+cubemapTexture.i4.onload = function() { handleCubemapTextureLoaded(cubemapTexture,4); }
+cubemapTexture.i5.onload = function() { handleCubemapTextureLoaded(cubemapTexture,5); }
+cubemapTexture.i6.onload = function() { handleCubemapTextureLoaded(cubemapTexture,6); }
+    cubemapTexture.i1.src = "b3.jpg";
+    cubemapTexture.i2.src = "b4.jpg";
+    cubemapTexture.i3.src = "b5.jpg";
+    cubemapTexture.i4.src = "b2.jpg";
+    cubemapTexture.i5.src = "road.jpg";
+    cubemapTexture.i6.src = "sky.jpg";
 }    
-function handleCubemapTextureLoaded(texture) {
+function handleCubemapTextureLoaded(texture, num) {
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.REPEAT); 
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.REPEAT);
@@ -21,27 +41,77 @@ function handleCubemapTextureLoaded(texture) {
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR); 
 
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.image);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.image);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.image);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.image);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.image);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.image);    
+	switch(num){
+	case 1:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.i1);
+	break
+        case 2: gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.i2);
+	break
+case 3:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.i3);
+break
+case 4:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.i4);
+break
+case 5:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.i5);
+break
+case 6:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+		  texture.i6);
+break
+}    
 }
 
-var sampleTexture; 
+var sampleTexture0;
+var sampleTexture1;
+var sampleTexture2;
+var sampleTexture3;
+var sampleTexture4;
+var sampleTexture5;
+var sampleTexture6;
+var sampleTexture7;
 
 function initTextures() {
-    sampleTexture = gl.createTexture();
-    sampleTexture.image = new Image();
-    sampleTexture.image.onload = function() {handleTextureLoaded(sampleTexture);}
-    sampleTexture.image.src = "brick.png";
+	sampleTexture0 = gl.createTexture();
+	sampleTexture0.image = new Image();
+	sampleTexture0.image.onload = function() {handleTextureLoaded(sampleTexture0);}
+	sampleTexture0.image.src = 'b2.jpg';
+
+	sampleTexture1 = gl.createTexture();
+	sampleTexture1.image = new Image();
+	sampleTexture1.image.onload = function() {handleTextureLoaded(sampleTexture1);}
+	sampleTexture1.image.src = 'b3.jpg';
+
+	sampleTexture2 = gl.createTexture();
+	sampleTexture2.image = new Image();
+	sampleTexture2.image.onload = function() {handleTextureLoaded(sampleTexture2);}
+	sampleTexture2.image.src = 'b4.jpg';
+
+	sampleTexture3 = gl.createTexture();
+	sampleTexture3.image = new Image();
+	sampleTexture3.image.onload = function() {handleTextureLoaded(sampleTexture3);}
+	sampleTexture3.image.src = 'b5.jpg';
+
+	sampleTexture4 = gl.createTexture();
+	sampleTexture4.image = new Image();
+	sampleTexture4.image.onload = function() {handleTextureLoaded(sampleTexture4);}
+	sampleTexture4.image.src = 'road.jpg';
+
+	sampleTexture5 = gl.createTexture();
+	sampleTexture5.image = new Image();
+	sampleTexture5.image.onload = function() {handleTextureLoaded(sampleTexture5);}
+	sampleTexture5.image.src = 'sky.jpg';
+
+	sampleTexture6 = gl.createTexture();
+	sampleTexture6.image = new Image();
+	sampleTexture6.image.onload = function() {handleTextureLoaded(sampleTexture6);}
+	sampleTexture6.image.src = 'stem.jpg';
+
+	sampleTexture7 = gl.createTexture();
+	sampleTexture7.image = new Image();
+	sampleTexture7.image.onload = function() {handleTextureLoaded(sampleTexture7);}
+	sampleTexture7.image.src = 'tree.jpg';
 }
 
 function handleTextureLoaded(texture) {
@@ -52,6 +122,37 @@ function handleTextureLoaded(texture) {
     gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
+var teapotDataStore;
+
+
+function initJSON()
+{
+    var request = new  XMLHttpRequest();
+    request.open("GET", "teapot.json");
+    request.onreadystatechange =
+      function () {
+          if (request.readyState == 4) {
+	      console.log("state ="+request.readyState); 
+              handleLoadedTeapot(JSON.parse(request.responseText));
+        }
+      }
+    request.send();
+}
+
+
+function handleLoadedTeapot(teapotData)
+{
+	teapotDataStore = teapotData;
+
+}
+
+function loadpot(){
+
+    normals = teapotDataStore.vertexNormals;
+    vertices = teapotDataStore.vertexPositions; 
+    indices =  teapotDataStore.indices;
+    textureCoords = teapotDataStore.vertexTextureCoords;
+}
 
 
 var restrict = []
@@ -76,7 +177,7 @@ var back_color = [0/255, 255/255, 255/255, 1]
   var light_pos = [0,0,0,1];   // eye space position 
 
   var mat_ambient = [0, 0, 0, 1]; 
-  var mat_diffuse= [1, 0, 0, 1]; 
+  var mat_diffuse= [1, 0, 0, .1]; 
   var mat_specular = [.9, .9, .9,1]; 
   var mat_shine = [50]; 
 
@@ -89,8 +190,8 @@ var vertexColorBuffer;
 var vertexIndexBuffer;
 var vertexNormalBuffer;
 var vertexTextureCoordBuffer;
-var eye = [0,-1,-0.2]
-var point = [0,0,0]
+var eye = [0,-1+.6,-0.2]
+var point = [0,0.6,0]
 var up = [0,1,0]
 
 //Tree variables: init_tree generates random variables for trees
@@ -125,7 +226,7 @@ mat4.identity(rMatrixS);
 var smRotate = mat4.create();
 mat4.identity(smRotate);
 
-var angle = 50; //view angle
+var angle = 120; //view angle
 
 var pMatrix = mat4.create();
 mat4.perspective(angle,1,.1,10,pMatrix); //Projection Matrix
@@ -135,11 +236,15 @@ mat4.multiply(pMatrix,World,vWorld); // Clip View Transformation
 function keyboardEvent(event){
 	rat = 10
   if (event.keyCode == 87){	//Move Forward
-	mat4.translate(cMatrix1,[0,-0.5/rat,0])
+	eye[1]+=.1;
+	point[1]+=.1;
+	//mat4.translate(cMatrix1,[0,-0.5/rat,0])
 
   }
   else if (event.keyCode == 83){ //Move Backward
-	mat4.translate(cMatrix1,[0,0.5/rat,0])
+	eye[1]-=.1;
+	point[1]-=.1;
+	//mat4.translate(cMatrix1,[0,0.5/rat,0])
   }
   else if( event.keyCode == 53||event.keyCode == 54){ //Zoom in and out
 	if(event.keyCode == 53) angle+=5;
@@ -148,10 +253,12 @@ function keyboardEvent(event){
 	mat4.multiply(pMatrix,World,vWorld);
   }
   else if (event.keyCode == 68){ //Move Right
-	mat4.translate(cMatrix1,[.5/rat,0,0]);
+		eye[0]-=.1;
+	point[0]-=.1;
   }
   else if (event.keyCode == 65){	//Move left
-	mat4.translate(cMatrix1,[-.5/rat,0,0]);
+	eye[0]+=.1;
+	point[0]+=.1;
 
   }
   else if (event.keyCode == 55){  // Rotate
@@ -160,11 +267,19 @@ function keyboardEvent(event){
 else if (event.keyCode == 56){    // Rotate Opposite
 	mat4.rotate(rMatrix1,-3.14/10,[0,0,1])
   }
+  else if (event.keyCode == 57){  // Rotate
+		mat4.rotate(rMatrix1,3.14/10,[0,1,0])
+  }
+else if (event.keyCode == 48){    // Rotate Opposite
+	mat4.rotate(rMatrix1,-3.14/10,[1,0,0])
+  }
 else if (event.keyCode == 50){  // Camera Down
-	mat4.translate(cMatrix1,[0,0,.5/rat]);
+	eye[2]-=.1;
+	point[2]-=.1;
   }
 else if (event.keyCode ==49){   // Camera Up
-	mat4.translate(cMatrix1,[0,0,-.5/rat]);
+	eye[2]+=.1;
+	point[2]+=.1;
   }
 else if (event.keyCode ==75){   // Sphere front
 	mat4.translate(cMatrixS,[0,-0.5/rat,0]);
@@ -182,6 +297,14 @@ else if (event.keyCode ==76){   // Sphere Back
 	mat4.translate(cMatrixS,[-0.5/rat,0,0]);
 	mat4.rotate(rMatrixS,-3.14/3,[0,1,0]);
   }
+else if (event.keyCode ==51){   // Sphere Back
+	
+  }
+else if (event.keyCode ==52){   // Sphere Back
+	
+  }
+
+  vMatrix = mat4.lookAt(eye,point,up);
   drawScene();
  }
 
@@ -223,508 +346,123 @@ function setMatrixUniforms() {
     }
 
 
+function drawwalls(){
+scaling = [.1,.1,.1];
+scaling_2 = 1
 
-function drawMoon(){
-
-shape = [0]
-c  = draw3D(shape,radius = 10, n = 20);
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.multiply(mMatrix,smRotate,mMatrix)
-mat4.translate(mMatrix,[0,5,1.5])
-mat4.scale(mMatrix,[.4,.4,.4])
-light_ambient = [1,1,1,1]
-mat_ambient = [1,1,1,1]
-redraw();
-mat_ambient = [0,0,0,1]
+mat4.translate(mMatrix,[0,0,0.5*scaling_2])
+mat4.scale(mMatrix,scaling)
+use_texture = 1;
+image_num = 4;
+square()
+redraw()
 
-
-}
-
-
-function drawSun(){
-
-shape = [0]
-c  = draw3D(shape,radius = 10, n = 20);
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.multiply(mMatrix,smRotate,mMatrix)
-mat4.translate(mMatrix,[0,5,-1.5])
-mat4.scale(mMatrix,[.4,.4,.4])
-mat_diffuse = [255/255,100/255,0,1]
-mat_ambient = mat_diffuse
-light_ambient = [1,1,1,1]
-mat_specular = [0,0,0,1]
-redraw();
-mat_specular = [0.9,0.9,0.9,1]
-mat_ambient = [0,0,0,1]
+mat4.translate(mMatrix,[0,0,-0.5*scaling_2])
+mat4.scale(mMatrix,scaling)
+use_texture = 1;
+image_num = 5;
+square()
+redraw()
 
-
-
-}
-
-
-function drawFloor(){
-
-shape = [1,2]
-c  = draw3D(shape,radius = 2, n = 4);
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,0,.06])
+mat4.translate(mMatrix,[0,.5*scaling_2,0])
 mat4.rotate(mMatrix,3.14/2,[1,0,0])
-mat4.scale(mMatrix,[10,.1,10])
-mat_ambient = [0,.2,0,1]
-ligth_ambient = [.1,.1,.1,1]
-mat_diffuse = [90/255,200/255,50/255,1]
-redraw();
-light_ambient = [0,0,0,1]
+mat4.scale(mMatrix,scaling)
+use_texture = 1;
+image_num = 3;
+square()
+redraw()
 
-
-}
-
-
-function drawTree(pos,shp,dshape){	//Draws one tree using random variables generated by init_tree()
-
-light_specular = [0,1,0,1]
-
-shape = [2,2]
-c  = draw3D(shape,radius = 2, n = 4);
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,.1,.03])
-mat4.translate(mMatrix,pos)
-mat4.scale(mMatrix,[2,2,2])
-mat4.scale(mMatrix,[0.01,0.01,0.06])
-mat_diffuse = [120/255,100/255,100/255,1]
-redraw();
+mat4.translate(mMatrix,[0,-.5*scaling_2,0])
+mat4.rotate(mMatrix,3.14/2,[1,0,0])
+mat4.scale(mMatrix,scaling)
+use_texture = 1;
+image_num = 0;
+square()
+redraw()
 
-shape = dshape
-c  = draw3D(shape,radius = 4, n = 8);
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,.1,.025])
-mat4.translate(mMatrix,[0,0,-.02])
-mat4.translate(mMatrix,pos)
-mat4.scale(mMatrix,[5,5,5])
-mat4.scale(mMatrix,[0.01,0.01,0.01])
-mat4.scale(mMatrix,shp)
-if (dshape[0]==2)
- mat4.scale(mMatrix,[3,3,1])
-mat_diffuse = [90/255,200/255,50/255,1]
-redraw();
+mat4.translate(mMatrix,[0.5*scaling_2,0,0])
+mat4.rotate(mMatrix,3.14/2,[0,1,0])
+mat4.scale(mMatrix,scaling)
+use_texture = 1;
+image_num = 1;
+square()
+redraw()
 
-light_specular =[1,1,1,1]
-
-}
-
-
-function drawCastle(){
-
-
-//Top Dome
-shape = [2,5]
-c  = draw3D(shape,radius = 5, n = 10);
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,.1,-.12])
-mat4.scale(mMatrix,[1.7,1.7,.1])
-mat_diffuse = [243/255,161/255,38/255,1]
-redraw();
+mat4.translate(mMatrix,[-.5*scaling_2,0,0])
+mat4.rotate(mMatrix,3.14/2,[0,1,0])
+mat4.scale(mMatrix,scaling)
+use_texture = 1;
+image_num = 2;
+square()
+redraw()
 
 
-//Front Gate Top
-shape = [1,1]
-c  = draw3D(shape,radius = 2, n = 4);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,0,-.06])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[7,0.3,1.5])
-mat_diffuse = [150/255,100/255,10/255,1]
-redraw();
-
-
-//Spikes
-for (var i=1;i<4;i++){
-shape = [2,3]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[i*.02,0,-.105])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,.5,.5])
-mat_diffuse = [250/255,0,10/255,1]
-redraw();
-}
-
-for (var i=0;i<4;i++){
-shape = [2,3]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-i*.02,0,-.105])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,.5,.5])
-mat_diffuse = [250/255,0,10/255,1]
-redraw();
-}
-
-
-
-//Front Gate Left
-shape = [1,1]
-c  = draw3D(shape,radius = 2, n = 4);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-.075,0,0])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[3,0.3,4])
-mat_diffuse = [150/255,100/255,10/255,1]
-redraw();
-
-
-//Front Gate Right
-shape = [1,1]
-c  = draw3D(shape,radius = 2, n = 4);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[.075,0,0])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[3,0.3,4])
-redraw();
-
-
-
-//Spikes
-for (var i=1;i<4;i++){
-shape = [2,3]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[i*.02,0.2,-.095])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,.5,.5])
-mat_diffuse = [250/255,0,10/255,1]
-redraw();
-}
-
-for (var i=0;i<4;i++){
-shape = [2,3]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-i*.02,0.2,-.095])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,.5,.5])
-mat_diffuse = [250/255,0,10/255,1]
-redraw();
-}
-
-
-
-
-
-
-
-//Wall
-c  = draw3D(shape,radius = 2, n = 4);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-.075,0,0])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[3,0.3,4])
-mat_diffuse = [250/255,150/255,10/255,1]
-redraw();
-
-
-//Spikes
-for (var i=1;i<4;i++){
-shape = [2,3]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-.1,0.1+0.02*i,-.095])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,.5,.5])
-mat_diffuse = [250/255,0,10/255,1]
-redraw();
-}
-
-for (var i=0;i<4;i++){
-shape = [2,3]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-.1,0.1-0.02*i,-.095])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,.5,.5])
-mat_diffuse = [250/255,0,10/255,1]
-redraw();
-}
-
-
-
-
-//Wall
-shape = [1,1]
-c  = draw3D(shape,radius = 2, n = 4);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,.2,0])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[7,0.3,4])
-mat_diffuse = [250/255,150/255,10/255,1]
-redraw();
-
-
-
-
-//Wall
-shape = [1,1]
-c  = draw3D(shape,radius = 2, n = 4);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.rotate(mMatrix,3.14/2,[0,0,1])
-mat4.translate(mMatrix,[.1,.1,0])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[7,.3,4])
-redraw();
-
-//Wall
-shape = [1,1]
-c  = draw3D(shape,radius = 2, n = 4);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.rotate(mMatrix,3.14/2,[0,0,1])
-mat4.translate(mMatrix,[.1,-.1,0])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[7,.3,4])
-redraw();
-
-
-//Spikes
-for (var i=1;i<4;i++){
-shape = [2,3]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[.1,0.1+0.02*i,-.095])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,.5,.5])
-mat_diffuse = [250/255,0,10/255,1]
-redraw();
-}
-
-for (var i=0;i<4;i++){
-shape = [2,3]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[.1,0.1-0.02*i,-.095])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,.5,.5])
-mat_diffuse = [250/255,0,10/255,1]
-redraw();
-}
-
-
-
-
-//Pillars
-
-shape = [2,2]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[.1,0,-.15])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[7,7,2])
-mat_diffuse = [190/255,130/255,30/255,1]
-redraw();
-
-
-shape = [2,2]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-.1,0,-.15])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[7,7,2])
-redraw();
-
-shape = [2,2]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[.1,0.2,-.15])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[7,7,2])
-redraw();
-
-shape = [2,2]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-.1,.2,-.15])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[7,7,2])
-redraw();
-
-
-shape = [1,1]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[.1,0,-.02])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,1,2])
-mat_diffuse = [120/255,80/255,10/255,1]
-redraw();
-
-
-
-shape = [1,1]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-.1,0,-.02])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,1,2])
-redraw();
-
-
-
-
-shape = [1,1]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[.1,0.2,-.02])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,1,2])
-redraw();
-
-
-shape = [1,1]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-.1,.2,-.02])
-mat4.scale(mMatrix,[.1,.1,.1])
-mat4.scale(mMatrix,[1,1,2])
-redraw();
-
-}
-
-
-
-function drawMountains(){ //Uses Cones for Mountains (Three)
-
-shape = [2,1]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,1,-.2])
-mat4.translate(mMatrix,[-.1,.2,-.02])
-mat4.scale(mMatrix,[10,5,1])
-mat_specular = [.1,.1,.1,1]
-mat_diffuse = [44/255,112/255,29/255,1]
-redraw();
-
-
-shape = [2,1]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[1,1,-.2])
-mat4.translate(mMatrix,[-.1,.2,-.02])
-mat4.scale(mMatrix,[8,5,1])
-redraw();
-
-shape = [2,1]
-c  = draw3D(shape,radius = 4, n = 8);
-mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[-1,.7,-.2])
-mat4.translate(mMatrix,[-.1,.2,-.02])
-mat4.scale(mMatrix,[8,5,1])
-redraw();
-
-mat_specular  = [.9,.9,.9,1]
 }
 
 
 function drawWorld(){
+use_dnd = 0
+line_switch = 0
 
-//drawCastle()
+drawwalls()
 
-//for (var i=0;i<tree_cd.length;i++){
-//	drawTree([tree_cd[i*3+0],tree_cd[i*3+1],0],[tree_sh[i*3+0],tree_sh[i*3+1],tree_sh[i*3+2]],[tree_3dsh[i*2+0],tree_3dsh[i*2+1]])
-//}
-
-//drawMountains()
-//if (y_ndc<0)
-//	drawMoon()
-//else
-//	drawSun()
+drawpot(.01,0,[.3,0.1,-.1],[1,0,0,1],0,0)
+drawpot(.006,0,[-.2,0.1,.2],[1,1,1,1],0,0)
+drawpot(.006,0,[0,-0.05,.1],[0,0,1,1],0,0)
 
 
+drawshape([2,2],3,6,1,6,[-.1,-.2,0.42],.4);
+drawshape([0],3,6,1,7,[-.1,-.2,-.1+.42],.4);
 
-//drawFloor()
+drawshape([2,2],3,6,1,6,[.2,.3,0.42],.4);
+drawshape([0],3,6,1,7,[.2,.3,-.1+.42],.4);
 
+drawshape([0],4,8,0,6,[.3,-.1,.4],.1);
 
-//shape =[0]
+}
 
-//c = draw3D(shape,radius=3,n = 6)
-
-/*mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.rotate(mMatrix,3.14/2,[1,0,0])
-mat4.scale(mMatrix,[.1,.1,.1])
-square()
-redraw()*/
-
-
-shape =[1]
-c = draw3D(shape,radius=2,n = 4)
+function drawshape(shape,radius,n,tex,num,translate,scale){
+c = draw3D(shape,radius,n)
 mat4.identity(mMatrix);
+mat4.translate(mMatrix,translate)
+mat4.scale(mMatrix,[scale,scale,scale])
+use_texture = tex;
+add_ambient = 0;
+mat_diffuse = [1,1,0,1]
+image_num = num;
+redraw()
+add_ambient = 0;
+mat_diffuse= [1,0,0,.1]
+}
+
+function drawpot(scale,tex,translate,diffuse,a,b){
+loadpot();
+mat4.identity(mMatrix);
+mat4.translate(mMatrix,translate)
+mat4.rotate(mMatrix,-3.14/2,[1,0,0])
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.scale(mMatrix,[.5,.5,.5])
-redraw()
+mat4.scale(mMatrix,[scale,scale,scale])
+use_texture = tex;
+add_ambient = a;
+add_light = b;
+mat_diffuse = diffuse
+redraw();
+
+add_ambient = 0;
+add_light = 0;
 
 }
 
@@ -771,12 +509,17 @@ function onDocumentMouseMove( event ) {
 
 
 function redraw(){ //Buffer initiallization when objects are drawn
+gl.uniform1i(shaderProgram.use_textureUniform, use_texture);
+gl.uniform1i(shaderProgram.use_dndUniform, use_dnd);
+gl.uniform1i(shaderProgram.add_ambientUniform, add_ambient);
+gl.uniform1i(shaderProgram.add_lightUniform, add_light);
 
 mat4.identity(nMatrix); 
 nMatrix = mat4.multiply(nMatrix, vMatrix);
 nMatrix = mat4.multiply(nMatrix, mMatrix); 	
 nMatrix = mat4.inverse(nMatrix);
 nMatrix = mat4.transpose(nMatrix);
+
 
 mat4.identity(v2wMatrix);
 v2wMatrix = mat4.multiply(v2wMatrix, vMatrix);
@@ -796,8 +539,6 @@ gl.uniform4f(shaderProgram.light_specularUniform, light_specular[0], light_specu
 
 setMatrixUniforms();
 
-if (line_switch)
- indices = lindices
 
 initBuffers()
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
@@ -809,10 +550,27 @@ gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, vertexNormalBuffer.i
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
 gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
+switch(image_num){
+case 0: texture2use = sampleTexture0;
+break
+case 1:texture2use = sampleTexture1;
+break
+case 2:texture2use = sampleTexture2;
+break
+case 3:texture2use = sampleTexture3;
+break
+case 4:texture2use = sampleTexture4;
+break
+case 5:texture2use = sampleTexture5;
+break
+case 6:texture2use = sampleTexture6;
+break
+case 7:texture2use = sampleTexture7;
+break
+}
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
-
 gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
-gl.bindTexture(gl.TEXTURE_2D, sampleTexture);    // bind the texture object to the texture unit 
+gl.bindTexture(gl.TEXTURE_2D, texture2use);    // bind the texture object to the texture unit 
 gl.uniform1i(shaderProgram.textureUniform, 0);
 
 gl.activeTexture(gl.TEXTURE1);   // set texture unit 1 to use 
@@ -836,7 +594,7 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clearColor(back_color[0],back_color[1],back_color[2],back_color[3])  //SKY
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	drawWorld(vWorld);
+	drawWorld();
     }
 
 
@@ -861,10 +619,6 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     function webGLStart() {  // First Call
         var canvas = document.getElementById("lab3-canvas");
         initGL(canvas);
-        init_tree(.3,.3);
-	init_tree(-.3,-.3);
-	init_tree(.3,-.3);
-	init_tree(-.3,.3);
         initShaders();
         
 	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
@@ -879,7 +633,6 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	document.addEventListener('keydown', keyboardEvent, false);
 	document.addEventListener('mousemove', onDocumentMouseMove, false);
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-
 	shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
         shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
 	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
@@ -898,10 +651,14 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
 	shaderProgram.textureUniform = gl.getUniformLocation(shaderProgram, "myTexture");
 	shaderProgram.cube_map_textureUniform = gl.getUniformLocation(shaderProgram, "cubeMap");
-	
+	shaderProgram.use_textureUniform = gl.getUniformLocation(shaderProgram, "use_texture");
+	shaderProgram.use_dndUniform = gl.getUniformLocation(shaderProgram, "use_dnd");
+	shaderProgram.add_lightUniform = gl.getUniformLocation(shaderProgram, "add_light");
+	shaderProgram.add_ambientUniform = gl.getUniformLocation(shaderProgram, "add_ambient");
 	initTextures();
 	initCubeMap();
-
+	initJSON();
+	alert('loaded the images');
         drawScene();
     }
 

@@ -61,6 +61,8 @@ function draw3D(shape,radius,n){
 				break
 		}
 		else if (shape[0]==1 || shape[0] ==2){
+			//normals = normals.concat([vertices[i],vertices[i+1],0])
+			//normals = normals.concat([vertices[i+3],vertices[i+4],0])
 			normals = normals.concat([vertices[i]+vertices[i+3],vertices[i+1]+vertices[i+4],0])
 			normals = normals.concat([vertices[i]+vertices[i+3],vertices[i+1]+vertices[i+4],0])
 			i+=3

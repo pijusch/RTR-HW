@@ -12,7 +12,10 @@
 
 <script id="shader-fs" type="x-shader/x-fragment">
 precision mediump float;
-
+	uniform int use_dnd; 
+	uniform int use_texture; 
+	uniform int add_light; 
+	uniform int add_ambient; 
     varying vec3 vaVertexPosition;
     varying vec3 vaVertexNormal;
     uniform vec3 aVertexNormal;
@@ -38,6 +41,17 @@ precision mediump float;
    uniform samplerCube cubeMap;
   varying vec4 vcolor;
 
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float sint(float a){
+	if(use_dnd == 0)
+	return 0.0;
+	else
+	return cos(a*100.1);
+}
+
 void main(void) {
 	vec4 texcolor;
 	vec3 view_vector, ref;
@@ -49,7 +63,10 @@ void main(void) {
 
 	vec3 v_normal =normalize(vec3(vuNMatrix*vec4(vaVertexNormal,1.0)));
 
-	vec3 v_normal2 =normalize(vec3(vuNMatrix*vec4(aVertexNormal,1.0)));
+	vec3 v = vec3(sint(FtexCoord[0]),sint(FtexCoord[1]),0);
+	
+	v_normal += v;
+
 
         vec4 eye_pos = vuVMatrix*vuMMatrix*vec4(vaVertexPosition, 1.0);
 
@@ -72,15 +89,20 @@ void main(void) {
         else
         specular = vec4(0,0,0,1);
 
+	if (use_texture ==0)
 	gl_FragColor = ambient+specular+diffuse;
 	//gl_FragColor = vec4(FtexCoord, FtexCoord);
-	gl_FragColor = texcolor+specular;
-
+        else if(use_texture ==1)
+	gl_FragColor = texcolor;
+	else{
 	view_vector = normalize(vec3(vec4(0,0,0,1)-eye_pos));
           ref = normalize(reflect(-view_vector, v_normal));  // in eye space
 	  ref = vec3(uV2WMatrix*vec4(ref,0));   // convert to world space
           env_color = textureCube(cubeMap, ref);
           gl_FragColor = env_color;
+ 	}
+	if (add_light==1) gl_FragColor+=specular;
+	if (add_ambient==1) gl_FragColor+=diffuse;
 	
 
     }
@@ -177,8 +199,11 @@ gl_Position = uPMatrix*uVMatrix*uMMatrix*vec4(aVertexPosition, 1.0);
 
     <canvas id="lab3-canvas" style="border: 1;" width="500" height="500"></canvas>
 </br>
-<button id  = 'intree' onclick="buttonEvent(0)"> Increase Trees </button>
-<button id  = 'dnp' onclick="buttonEvent(1)"> Do Not Press !!</button>
+<button id  = 'texture' onclick="buttonEvent(0)"> Texture ON/OFF </button>
+<button id  = 'cubemap' onclick="buttonEvent(1)"> CUBE MAP ON/OFF </button>
+<button id  = 'diffuse' onclick="buttonEvent(0)"> ADD DIFFUSE </button>
+<button id  = 'light' onclick="buttonEvent(1)"> ADD LIGHT </button>
+<button id  = 'dnd' onclick="buttonEvent(1)"> Do Not Press!!</button>
 
 </body>
 
