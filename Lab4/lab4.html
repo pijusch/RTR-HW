@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<title> Lab3 </title>
+<title> Lab4 </title>
 
 <!-- HTML file adapted from Prof. Shen's codes -->
 
@@ -91,7 +91,6 @@ void main(void) {
 
 	if (use_texture ==0)
 	gl_FragColor = ambient+specular+diffuse;
-	//gl_FragColor = vec4(FtexCoord, FtexCoord);
         else if(use_texture ==1)
 	gl_FragColor = texcolor;
 	else{
@@ -190,20 +189,21 @@ gl_Position = uPMatrix*uVMatrix*uMMatrix*vec4(aVertexPosition, 1.0);
 </script>
 
 <script type="text/javascript" src="shaders_setup.js"></script>
-<script type="text/javascript" src="lab3.js"></script>
+<script type="text/javascript" src="lab4.js"></script>
 <script type="text/javascript" src="primitives.js"></script>
 
 </head>
 
 <body onload="webGLStart();">
 
-    <canvas id="lab3-canvas" style="border: 1;" width="500" height="500"></canvas>
+    <canvas id="lab4-canvas" style="border: 1;" width="500" height="500"></canvas>
 </br>
 <button id  = 'texture' onclick="buttonEvent(0)"> Texture ON/OFF </button>
 <button id  = 'cubemap' onclick="buttonEvent(1)"> CUBE MAP ON/OFF </button>
-<button id  = 'diffuse' onclick="buttonEvent(0)"> ADD DIFFUSE </button>
-<button id  = 'light' onclick="buttonEvent(1)"> ADD LIGHT </button>
-<button id  = 'dnd' onclick="buttonEvent(1)"> Do Not Press!!</button>
+<button id  = 'diffuse' onclick="buttonEvent(2)"> ADD DIFFUSE </button>
+<button id  = 'light' onclick="buttonEvent(3)"> ADD LIGHT </button>
+<button id  = 'shape' onclick="buttonEvent(5)"> Change shape</button>
+<button id  = 'dnd' onclick="buttonEvent(4)"> Do Not Press!!</button>
 
 </body>
 

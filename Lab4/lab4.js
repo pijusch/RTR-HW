@@ -1,4 +1,3 @@
-/** Mouse code adapted from Prof. Shen's code
 
 /**Global Variables
 **/
@@ -6,11 +5,19 @@
 
 var use_texture = 0; 
 var use_dnd = 0;
+var use_line = 0;
 var add_light = 0;
 var add_ambient = 0;
 var cubemapTexture;
 var image_num = 0;
+var pottex = 0;
+var potdif = 0;
+var potlit = 0;
+var that_shape = [0];
+var image_set = [0,1,2,3];
 
+
+//Cube Map (loading images)
 
 function initCubeMap() {
     cubemapTexture = gl.createTexture();
@@ -26,12 +33,12 @@ cubemapTexture.i3.onload = function() { handleCubemapTextureLoaded(cubemapTextur
 cubemapTexture.i4.onload = function() { handleCubemapTextureLoaded(cubemapTexture,4); }
 cubemapTexture.i5.onload = function() { handleCubemapTextureLoaded(cubemapTexture,5); }
 cubemapTexture.i6.onload = function() { handleCubemapTextureLoaded(cubemapTexture,6); }
-    cubemapTexture.i1.src = "b3.jpg";
-    cubemapTexture.i2.src = "b4.jpg";
-    cubemapTexture.i3.src = "b5.jpg";
-    cubemapTexture.i4.src = "b2.jpg";
-    cubemapTexture.i5.src = "road.jpg";
-    cubemapTexture.i6.src = "sky.jpg";
+    cubemapTexture.i1.src = "./images/b3.jpg";
+    cubemapTexture.i2.src = "./images/b4.jpg";
+    cubemapTexture.i3.src = "./images/b5.jpg";
+    cubemapTexture.i4.src = "./images/b2.jpg";
+    cubemapTexture.i5.src = "./images/road.jpg";
+    cubemapTexture.i6.src = "./images/sky.jpg";
 }    
 function handleCubemapTextureLoaded(texture, num) {
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
@@ -63,6 +70,10 @@ break
 }    
 }
 
+
+
+//Texture variables, each for 1 specific texture
+
 var sampleTexture0;
 var sampleTexture1;
 var sampleTexture2;
@@ -76,42 +87,42 @@ function initTextures() {
 	sampleTexture0 = gl.createTexture();
 	sampleTexture0.image = new Image();
 	sampleTexture0.image.onload = function() {handleTextureLoaded(sampleTexture0);}
-	sampleTexture0.image.src = 'b2.jpg';
+	sampleTexture0.image.src = './images/b2.jpg';
 
 	sampleTexture1 = gl.createTexture();
 	sampleTexture1.image = new Image();
 	sampleTexture1.image.onload = function() {handleTextureLoaded(sampleTexture1);}
-	sampleTexture1.image.src = 'b3.jpg';
+	sampleTexture1.image.src = './images/b3.jpg';
 
 	sampleTexture2 = gl.createTexture();
 	sampleTexture2.image = new Image();
 	sampleTexture2.image.onload = function() {handleTextureLoaded(sampleTexture2);}
-	sampleTexture2.image.src = 'b4.jpg';
+	sampleTexture2.image.src = './images/b4.jpg';
 
 	sampleTexture3 = gl.createTexture();
 	sampleTexture3.image = new Image();
 	sampleTexture3.image.onload = function() {handleTextureLoaded(sampleTexture3);}
-	sampleTexture3.image.src = 'b5.jpg';
+	sampleTexture3.image.src = './images/b5.jpg';
 
 	sampleTexture4 = gl.createTexture();
 	sampleTexture4.image = new Image();
 	sampleTexture4.image.onload = function() {handleTextureLoaded(sampleTexture4);}
-	sampleTexture4.image.src = 'road.jpg';
+	sampleTexture4.image.src = './images/road.jpg';
 
 	sampleTexture5 = gl.createTexture();
 	sampleTexture5.image = new Image();
 	sampleTexture5.image.onload = function() {handleTextureLoaded(sampleTexture5);}
-	sampleTexture5.image.src = 'sky.jpg';
+	sampleTexture5.image.src = './images/sky.jpg';
 
 	sampleTexture6 = gl.createTexture();
 	sampleTexture6.image = new Image();
 	sampleTexture6.image.onload = function() {handleTextureLoaded(sampleTexture6);}
-	sampleTexture6.image.src = 'stem.jpg';
+	sampleTexture6.image.src = './images/stem.jpg';
 
 	sampleTexture7 = gl.createTexture();
 	sampleTexture7.image = new Image();
 	sampleTexture7.image.onload = function() {handleTextureLoaded(sampleTexture7);}
-	sampleTexture7.image.src = 'tree.jpg';
+	sampleTexture7.image.src = './images/tree.jpg';
 }
 
 function handleTextureLoaded(texture) {
@@ -121,6 +132,13 @@ function handleTextureLoaded(texture) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.bindTexture(gl.TEXTURE_2D, null);
 }
+
+
+
+
+
+
+//Loading polygon model (teapot)
 
 var teapotDataStore;
 
@@ -155,14 +173,12 @@ function loadpot(){
 }
 
 
-var restrict = []
-var danger = []
 
 
 
-var prev_ndc = 1
+
 var line_switch = 0
-var back_color = [0/255, 255/255, 255/255, 1]
+var back_color = [1,1,1,1]
 
  var mMatrix = mat4.create();  // model matrix
  var vMatrix = mat4.create(); // view matrix
@@ -181,7 +197,6 @@ var back_color = [0/255, 255/255, 255/255, 1]
   var mat_specular = [.9, .9, .9,1]; 
   var mat_shine = [50]; 
 
-var y_ndc= 1
 
 var gl;
 var shaderProgram;
@@ -190,15 +205,10 @@ var vertexColorBuffer;
 var vertexIndexBuffer;
 var vertexNormalBuffer;
 var vertexTextureCoordBuffer;
-var eye = [0,-1+.6,-0.2]
+var eye = [0,-1,-0.2]
 var point = [0,0.6,0]
 var up = [0,1,0]
 
-//Tree variables: init_tree generates random variables for trees
-var tree_num = 4;
-var tree_cd = [];
-var tree_sh = [];
-var tree_3dsh = [];
 
 
 
@@ -212,21 +222,14 @@ var vWorld = mat4.create();
 var cMatrix1 = mat4.create();
 mat4.identity(cMatrix1);
 
-var cMatrixS = mat4.create();
-mat4.identity(cMatrixS);
-
-
 //Global Rotation Updates to control heirarchy
 var rMatrix1 = mat4.create();
 mat4.identity(rMatrix1);
 
-var rMatrixS = mat4.create();
-mat4.identity(rMatrixS);
-
 var smRotate = mat4.create();
 mat4.identity(smRotate);
 
-var angle = 120; //view angle
+var angle = 50; //view angle
 
 var pMatrix = mat4.create();
 mat4.perspective(angle,1,.1,10,pMatrix); //Projection Matrix
@@ -281,22 +284,6 @@ else if (event.keyCode ==49){   // Camera Up
 	eye[2]+=.1;
 	point[2]+=.1;
   }
-else if (event.keyCode ==75){   // Sphere front
-	mat4.translate(cMatrixS,[0,-0.5/rat,0]);
-	mat4.rotate(rMatrixS,3.14/3,[1,0,0]);
-  }
-else if (event.keyCode ==73){   // Sphere Back
-	mat4.translate(cMatrixS,[0,0.5/rat,0]);
-	mat4.rotate(rMatrixS,-3.14/3,[1,0,0]);
-  }
-else if (event.keyCode ==74){   // Sphere front
-	mat4.translate(cMatrixS,[.5/rat,0,0]);
-	mat4.rotate(rMatrixS,3.14/3,[0,1,0]);
-  }
-else if (event.keyCode ==76){   // Sphere Back
-	mat4.translate(cMatrixS,[-0.5/rat,0,0]);
-	mat4.rotate(rMatrixS,-3.14/3,[0,1,0]);
-  }
 else if (event.keyCode ==51){   // Sphere Back
 	
   }
@@ -320,17 +307,36 @@ else if (event.keyCode ==52){   // Sphere Back
         }
     }
 
+
+
+//HTML buttons
+
 function buttonEvent(arg){ /** Handles Button Events **/
    button = arg;
    if( arg==0)	//
-	{	
-	 init_tree(-.3,.3)
-	init_tree(-.3,-.3)
-	init_tree(.3,.3)
-	init_tree(.3,-.3)
+	{	if (pottex !=1)
+		pottex = 1
+		else
+		pottex = 0
+		image_set = [Math.ceil(Math.random()*10)%7,Math.ceil(Math.random()*10)%7,Math.ceil(Math.random()*10)%7,Math.ceil(Math.random()*10)%7]
 	}
    else if(arg==1){
-	line_switch = 1 - line_switch
+		if(pottex !=2)
+	 	pottex = 2
+		else pottex =0
+	}
+    else if (arg==2){
+		potdif = !potdif
+	}
+    else if (arg == 3){
+		potlit = !potlit
+	}
+    else if(arg == 4){
+		use_dnd = !use_dnd
+		use_line = !use_line
+	}
+    else if(arg == 5){
+		that_shape = [Math.ceil(Math.random()*100)%3, Math.ceil(Math.random()*100)%10+1];
 	}
    drawScene();
 }
@@ -346,6 +352,9 @@ function setMatrixUniforms() {
     }
 
 
+
+//6 sides of the room cube
+
 function drawwalls(){
 scaling = [.1,.1,.1];
 scaling_2 = 1
@@ -354,6 +363,7 @@ mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,[0,0,0.5*scaling_2])
 mat4.scale(mMatrix,scaling)
+mat4.scale(mMatrix,[1,2,1])
 use_texture = 1;
 image_num = 4;
 square()
@@ -363,6 +373,7 @@ mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,[0,0,-0.5*scaling_2])
 mat4.scale(mMatrix,scaling)
+mat4.scale(mMatrix,[1,2,1])
 use_texture = 1;
 image_num = 5;
 square()
@@ -370,7 +381,7 @@ redraw()
 
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,.5*scaling_2,0])
+mat4.translate(mMatrix,[0,.5*scaling_2*2,0])
 mat4.rotate(mMatrix,3.14/2,[1,0,0])
 mat4.scale(mMatrix,scaling)
 use_texture = 1;
@@ -380,7 +391,7 @@ redraw()
 
 mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
-mat4.translate(mMatrix,[0,-.5*scaling_2,0])
+mat4.translate(mMatrix,[0,-.5*scaling_2*2,0])
 mat4.rotate(mMatrix,3.14/2,[1,0,0])
 mat4.scale(mMatrix,scaling)
 use_texture = 1;
@@ -393,6 +404,7 @@ mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,[0.5*scaling_2,0,0])
 mat4.rotate(mMatrix,3.14/2,[0,1,0])
 mat4.scale(mMatrix,scaling)
+mat4.scale(mMatrix,[1,2,1])
 use_texture = 1;
 image_num = 1;
 square()
@@ -403,6 +415,7 @@ mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,[-.5*scaling_2,0,0])
 mat4.rotate(mMatrix,3.14/2,[0,1,0])
 mat4.scale(mMatrix,scaling)
+mat4.scale(mMatrix,[1,2,1])
 use_texture = 1;
 image_num = 2;
 square()
@@ -412,42 +425,56 @@ redraw()
 }
 
 
+//Calls all the drawing function with arguments
+
 function drawWorld(){
-use_dnd = 0
-line_switch = 0
+line_switch  =  0
+
+drawpot(.01,0,[.3,-0.1,-.1],[1,0,0,1],0,0,image_set[0])
+drawpot(.006,0,[-.2,-0.1,.2],[1,1,1,1],0,0,image_set[1])
+drawpot(.006,0,[0,-0.1,.1],[0,0,1,1],0,0,image_set[2])
+drawshape(that_shape,4,8,0,6,[.3,.1,.4],.4,1,image_set[3]);
+
+
+line_switch = use_line
 
 drawwalls()
 
-drawpot(.01,0,[.3,0.1,-.1],[1,0,0,1],0,0)
-drawpot(.006,0,[-.2,0.1,.2],[1,1,1,1],0,0)
-drawpot(.006,0,[0,-0.05,.1],[0,0,1,1],0,0)
+drawshape([2,2],3,6,1,6,[-.21,.6,0.30],1,0);
+drawshape([0],3,6,1,7,[-.21,.6,-.3+.30],1,0);
 
+drawshape([2,2],3,6,1,6,[.21,.6,0.30],1,0);
+drawshape([0],3,6,1,7,[.21,.6,-.3+.30],1,0);
 
-drawshape([2,2],3,6,1,6,[-.1,-.2,0.42],.4);
-drawshape([0],3,6,1,7,[-.1,-.2,-.1+.42],.4);
-
-drawshape([2,2],3,6,1,6,[.2,.3,0.42],.4);
-drawshape([0],3,6,1,7,[.2,.3,-.1+.42],.4);
-
-drawshape([0],4,8,0,6,[.3,-.1,.4],.1);
 
 }
 
-function drawshape(shape,radius,n,tex,num,translate,scale){
+function drawshape(shape,radius,n,tex,num,translate,scale,on,image){
 c = draw3D(shape,radius,n)
 mat4.identity(mMatrix);
 mat4.translate(mMatrix,translate)
+if (on){
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+}
 mat4.scale(mMatrix,[scale,scale,scale])
 use_texture = tex;
 add_ambient = 0;
 mat_diffuse = [1,1,0,1]
 image_num = num;
+if(on){
+image_num = image;
+use_texture = pottex;
+add_ambient = potdif;
+add_light = potlit;
+}
+add_light = 0;
 redraw()
 add_ambient = 0;
 mat_diffuse= [1,0,0,.1]
 }
 
-function drawpot(scale,tex,translate,diffuse,a,b){
+function drawpot(scale,tex,translate,diffuse,a,b,image){
 loadpot();
 mat4.identity(mMatrix);
 mat4.translate(mMatrix,translate)
@@ -455,9 +482,10 @@ mat4.rotate(mMatrix,-3.14/2,[1,0,0])
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
 mat4.scale(mMatrix,[scale,scale,scale])
-use_texture = tex;
-add_ambient = a;
-add_light = b;
+image_num = image;
+use_texture = pottex;
+add_ambient = potdif;
+add_light = potlit;
 mat_diffuse = diffuse
 redraw();
 
@@ -466,46 +494,6 @@ add_light = 0;
 
 }
 
-
-function zfunction(arg){
-	
-if (arg>0)
-	return 1
-else if(arg<0)
-	return -1
-else return 0
-
-}
-
-function ndc(x,min,max){
-
-	return 2*(x-min)/(max-min)-1
-}
-
-
-
-function onDocumentMouseMove( event ) {
-
-	
-          var mouseX = event.clientX;
-          var mouseY = event.clientY; 
-	
-/*	if(mouseX>gl.viewportWidth ||mouseY>gl.viewportHeight) return
-
-	light_pos[0] = ndc(mouseX,0,gl.viewportWidth)
-	y_ndc = -1*ndc(mouseY,0,gl.viewportHeight)
-	light_pos[1] =  y_ndc
-	back_color[1] = back_color[2] = (y_ndc+1.2)
-	if (prev_ndc!=Math.floor(y_ndc*10)/10){
-		prev_ndc = Math.floor(y_ndc*10)/10
-		mat4.identity(smRotate)
-	        mat4.rotate(smRotate,3.14*(prev_ndc-1)/2,[0,1,0])
-	}
-
-
-	  
-          drawScene();*/
-     }
 
 
 function redraw(){ //Buffer initiallization when objects are drawn
@@ -522,8 +510,7 @@ nMatrix = mat4.transpose(nMatrix);
 
 
 mat4.identity(v2wMatrix);
-v2wMatrix = mat4.multiply(v2wMatrix, vMatrix);
-//        v2wMatrix = mat4.inverse(v2wMatrix);     
+v2wMatrix = mat4.multiply(v2wMatrix, vMatrix);     
 v2wMatrix = mat4.transpose(v2wMatrix)
 
 shaderProgram.light_posUniform = gl.getUniformLocation(shaderProgram, "light_pos");
@@ -550,24 +537,24 @@ gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, vertexNormalBuffer.i
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
 gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-switch(image_num){
-case 0: texture2use = sampleTexture0;
-break
-case 1:texture2use = sampleTexture1;
-break
-case 2:texture2use = sampleTexture2;
-break
-case 3:texture2use = sampleTexture3;
-break
-case 4:texture2use = sampleTexture4;
-break
-case 5:texture2use = sampleTexture5;
-break
-case 6:texture2use = sampleTexture6;
-break
-case 7:texture2use = sampleTexture7;
-break
-}
+	switch(image_num){
+	case 0: texture2use = sampleTexture0;
+	break
+	case 1:texture2use = sampleTexture1;
+	break
+	case 2:texture2use = sampleTexture2;
+	break
+	case 3:texture2use = sampleTexture3;
+	break
+	case 4:texture2use = sampleTexture4;
+	break
+	case 5:texture2use = sampleTexture5;
+	break
+	case 6:texture2use = sampleTexture6;
+	break
+	case 7:texture2use = sampleTexture7;
+	break
+	}
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
 gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
 gl.bindTexture(gl.TEXTURE_2D, texture2use);    // bind the texture object to the texture unit 
@@ -598,26 +585,8 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     }
 
 
-
-	 function rand(min,max){
-	return Math.random() * (max - min) + min;
-	}
-
-    function init_tree(x,y){
-	for (var i=0;i<tree_num;i++){
-		tree_cd = tree_cd.concat([x+rand(-2,2)/10,y+rand(-2,2)/10,0])
-		tree_sh = tree_sh.concat([1,1,Math.random()+1])
-		temp = Math.random()
-		if (temp>0.5) temp = 0
-		else	temp = 2
-		temp2 = Math.abs(Math.random()*4)
-		tree_3dsh = tree_3dsh.concat([temp,temp2])
-        }
-    }
-
-
     function webGLStart() {  // First Call
-        var canvas = document.getElementById("lab3-canvas");
+        var canvas = document.getElementById("lab4-canvas");
         initGL(canvas);
         initShaders();
         
@@ -631,7 +600,6 @@ gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
         gl.enableVertexAttribArray(shaderProgram.vertexTexCoordsAttribute);
 	
 	document.addEventListener('keydown', keyboardEvent, false);
-	document.addEventListener('mousemove', onDocumentMouseMove, false);
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 	shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
         shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
