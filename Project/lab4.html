@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title> Lab4 </title>
+
+<!-- HTML file adapted from Prof. Shen's codes -->
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+<script id="shader-fs" type="x-shader/x-fragment">
+precision mediump float;
+	uniform int use_dnd; 
+	uniform int use_texture; 
+	uniform int add_light; 
+	uniform int add_ambient; 
+    varying vec3 vaVertexPosition;
+    varying vec3 vaVertexNormal;
+    uniform vec3 aVertexNormal;
+
+    varying mat4 vuMMatrix; 
+    varying mat4 vuVMatrix;
+    varying mat4 vuPMatrix;
+    varying mat4 vuNMatrix;
+    uniform mat4 uV2WMatrix;  // eye to world 
+
+    varying vec4 vlight_pos; 
+    varying vec4 vambient_coef;
+    varying vec4 vdiffuse_coef;
+    varying vec4 vspecular_coef;
+    varying float vmat_shininess; 
+
+    varying vec4 vlight_ambient; 
+    varying vec4 vlight_diffuse; 
+    varying vec4 vlight_specular;
+ 
+    varying highp vec2 FtexCoord; 
+    uniform sampler2D myTexture;	
+   uniform samplerCube cubeMap;
+  varying vec4 vcolor;
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float sint(float a){
+	if(use_dnd == 0)
+	return 0.0;
+	else
+	return cos(a*100.1);
+}
+
+void main(void) {
+	vec4 texcolor;
+	vec3 view_vector, ref;
+	vec4 env_color = vec4(1,0,0,1);
+
+	texcolor = texture2D(myTexture, FtexCoord);
+
+	vec4 light_pos_in_eye = vlight_pos;
+
+	vec3 v_normal =normalize(vec3(vuNMatrix*vec4(vaVertexNormal,1.0)));
+
+	vec3 v = vec3(sint(FtexCoord[0]),sint(FtexCoord[1]),0);
+	
+	v_normal += v;
+
+
+        vec4 eye_pos = vuVMatrix*vuMMatrix*vec4(vaVertexPosition, 1.0);
+
+        vec3 light_vector = normalize(vec3(light_pos_in_eye - eye_pos)); 
+
+        vec3 eye_vector = normalize(-vec3(eye_pos));
+        
+        
+        vec4 ambient = vambient_coef * vlight_ambient; 
+        float ndotl = max(dot(v_normal, light_vector), 0.0); 
+
+        vec4 diffuse = vdiffuse_coef * vlight_diffuse* ndotl;
+
+	vec3 R = normalize(2.0 * ndotl *v_normal-eye_vector);
+        float rdotv = max(dot(R, eye_vector), 0.0);
+
+        vec4 specular;
+        if (ndotl>0.0) 
+        specular = vspecular_coef* vlight_specular*pow(rdotv, vmat_shininess);
+        else
+        specular = vec4(0,0,0,1);
+
+	if (use_texture ==0)
+	gl_FragColor = ambient+specular+diffuse;
+        else if(use_texture ==1)
+	gl_FragColor = texcolor;
+	else{
+	view_vector = normalize(vec3(vec4(0,0,0,1)-eye_pos));
+          ref = normalize(reflect(-view_vector, v_normal));  // in eye space
+	  ref = vec3(uV2WMatrix*vec4(ref,0));   // convert to world space
+          env_color = textureCube(cubeMap, ref);
+          gl_FragColor = env_color;
+ 	}
+	if (add_light==1) gl_FragColor+=specular;
+	if (add_ambient==1) gl_FragColor+=diffuse;
+	
+
+    }
+</script>
+
+
+<!--  ************** Vertex Shader ************* -->
+<script id="shader-vs" type="x-shader/x-vertex">
+
+    attribute vec3 aVertexPosition;
+    attribute vec3 aVertexNormal;
+
+    attribute vec2 aVertexTexCoords;
+
+    varying vec3 vaVertexPosition;
+    varying vec3 vaVertexNormal;
+
+    uniform mat4 uMMatrix; 
+    uniform mat4 uVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat4 uNMatrix;
+    //uniform mat4 uV2WMatrix;  // eye to world 
+
+    uniform vec4 light_pos; 
+    uniform vec4 ambient_coef;
+    uniform vec4 diffuse_coef;
+    uniform vec4 specular_coef;
+    uniform float mat_shininess; 
+
+    uniform vec4 light_ambient; 
+    uniform vec4 light_diffuse; 
+    uniform vec4 light_specular;
+
+   //uniform sampler2D myTexture;
+
+
+    varying mat4 vuMMatrix; 
+    varying mat4 vuVMatrix;
+    varying mat4 vuPMatrix;
+    varying mat4 vuNMatrix; 
+
+    varying vec4 vlight_pos; 
+    varying vec4 vambient_coef;
+    varying vec4 vdiffuse_coef;
+    varying vec4 vspecular_coef;
+    varying float vmat_shininess; 
+
+    varying vec4 vlight_ambient; 
+    varying vec4 vlight_diffuse; 
+    varying vec4 vlight_specular;
+    varying highp vec2 FtexCoord;
+
+    varying vec4 vcolor;
+
+    varying vec3 v_normal;  // vertex normal
+	
+
+    void main(void) {
+
+vuMMatrix = uMMatrix; 
+vuVMatrix = uVMatrix;
+vuPMatrix = uPMatrix;
+vuNMatrix = uNMatrix; 
+
+
+vlight_pos = light_pos; 
+vambient_coef = ambient_coef;
+vdiffuse_coef = diffuse_coef;
+vspecular_coef = specular_coef;
+vmat_shininess = mat_shininess; 
+
+vlight_ambient = light_ambient; 
+vlight_diffuse = light_diffuse; 
+vlight_specular = light_specular;
+
+
+vaVertexPosition = aVertexPosition;
+vaVertexNormal = aVertexNormal;
+  
+FtexCoord = aVertexTexCoords; 
+gl_Position = uPMatrix*uVMatrix*uMMatrix*vec4(aVertexPosition, 1.0);
+	
+    
+    }
+</script>
+
+<script type="text/javascript" src="shaders_setup.js"></script>
+<script type="text/javascript" src="lab4.js"></script>
+<script type="text/javascript" src="primitives.js"></script>
+
+</head>
+
+<body onload="webGLStart();">
+
+    <canvas id="lab4-canvas" style="border: 1;" width="500" height="500"></canvas>
+</br>
+<button id  = 'texture' onclick="buttonEvent(0)"> Texture ON/OFF </button>
+<button id  = 'cubemap' onclick="buttonEvent(1)"> CUBE MAP ON/OFF </button>
+<button id  = 'diffuse' onclick="buttonEvent(2)"> ADD DIFFUSE </button>
+<button id  = 'light' onclick="buttonEvent(3)"> ADD LIGHT </button>
+<button id  = 'shape' onclick="buttonEvent(5)"> Change shape</button>
+<button id  = 'dnd' onclick="buttonEvent(4)"> Do Not Press!!</button>
+
+</body>
+
+
+</html>
+
+
