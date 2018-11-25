@@ -20,10 +20,10 @@ var potlit = 0;
 var that_shape = [0];
 var image_set = [0,1,2,3];
 var ball_x = 0
-var ball_y = 0
+var ball_y = 0.1
 
 
-max_objects = 2;
+max_objects = 10;
 
 
 //Cube Map (loading images)
@@ -207,6 +207,7 @@ mat4.identity(rMatrix1);
 //Global Translation Updates to control heirarchy
 var cMatrixb = mat4.create();
 mat4.identity(cMatrixb);
+mat4.translate(cMatrixb,[ball_x,ball_y,0])
 
 //Global Rotation Updates to control heirarchy
 var rMatrixb = mat4.create();
@@ -258,7 +259,7 @@ function keyboardEvent(event){
   else if (event.keyCode == 65){	//Move left
 	//eye[0]+=.1;
 	//point[0]+=.1;
-	if(ball_y>=0)
+	if(ball_y>=.1)
 	ball_y-=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,0])
@@ -332,6 +333,10 @@ function buttonEvent(arg){ /** Handles Button Events **/
 		potlit = !potlit
 	}
     else if(arg == 4){
+		alert(ball_x)
+		alert(ball_y)
+		alert(object_list[0][1][0])
+		alert(object_list[0][1][1])
 		use_dnd = !use_dnd
 		use_line = !use_line
 	}
@@ -358,13 +363,25 @@ function setMatrixUniforms() {
 //Calls all the drawing function with arguments
 
 
+function drawfloor(){
+	c = square()
+	mat4.identity(mMatrix);
+	mat4.multiply(mMatrix,cMatrix1,mMatrix)
+	mat4.multiply(mMatrix,rMatrix1,mMatrix)
+	mat4.translate(mMatrix,[0,0,.1])
+	redraw()
+}
+
 function drawWorld(){
+
 for (var i=0;i<object_list.length;i++){
 	drawobject(object_list[i][0],object_list[i][1],0,0)
 }
 
-line_switch = 1
-drawball([.3,.3,.3],[0,.1,0],0,1);
+drawfloor()
+
+line_switch = 0
+drawball([.3,.3,.3],[0,0,.065],0,1);
 line_switch = 0
 
 
@@ -381,7 +398,7 @@ mat4.translate(mMatrix,trans)
 mat4.rotate(mMatrix,rotat,[0,0,1])
 mat4.scale(mMatrix,scal)
 mat4.scale(mMatrix,[.3,.3,.3])
-use_texture = 1;
+use_texture = 0;
 add_ambient = 0;
 mat_diffuse = [1,1,0,1]
 image_num = img;
@@ -605,7 +622,7 @@ function sleep (time) {
 	continous()
 	drawScene()
 	})
-		if(c==1000)
+		if(c==10000)
 		break
 	}
     }
@@ -632,7 +649,7 @@ function check(){
 }
 
 function intersection(bx,by,ox,oy){
-return ( (bx+0.07 < ox-0.035) || (bx-0.07 > ox+0.035)) && ( (by+0.07 < oy-0.035) || (by-0.07 > oy+0.035))
+return !( (bx+0.03 < ox-0.035) || (bx-0.03 > ox+0.035) ||  (by+0.03 < oy-0.035) || (by-0.03 > oy+0.035))
 
 
 }
@@ -645,7 +662,7 @@ function add(){
 
 function remove(){
 	for (var i=0;i<object_list.length;i++){
-		if (object_list[i][1][2] > .1){
+		if (object_list[i][1][2] > .1){//0+.06){
 			object_list = object_list.splice(0,i).concat(object_list.splice(i+1,object_list.length))
 			remove()
 		}
