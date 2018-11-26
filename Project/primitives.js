@@ -76,9 +76,9 @@ function draw3D(shape,radius,n){
 
 
 
-function square(){  // genrates a square at origin (no z component (0)) with given color
+function square(col){  // genrates a square at origin (no z component (0)) with given color
 			// Plus added lighting effect
-col = [1 ,0,0]
+//col = [1 ,0,0]
 
 
 vertices = [
@@ -98,10 +98,10 @@ colors = colors.concat(col); colors = colors.concat(sqr[2]*.7);
 colors = colors.concat(col); colors = colors.concat(sqr[3]*.7);
 }
 else{
-colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
-colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
-colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
-colors = colors.concat(col); colors = colors.concat(0.5+Math.random());
+colors = colors.concat(col); 
+colors = colors.concat(col); 
+colors = colors.concat(col); 
+colors = colors.concat(col); 
 }
 indices = [
     0,  1,  2, 0,  2,  3,
@@ -110,5 +110,7 @@ indices = [
 normals = [0,0,1,0,0,1,0,0,1,0,0,1]
 
 textureCoords = [0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.0]
+
+lindices = [0,1,1,2,2,3,3,0]
 
  }

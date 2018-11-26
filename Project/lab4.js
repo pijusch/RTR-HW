@@ -26,61 +26,6 @@ var ball_y = 0.1
 max_objects = 5;
 
 
-//Cube Map (loading images)
-
-function initCubeMap() {
-    cubemapTexture = gl.createTexture();
-    cubemapTexture.i1 = new Image();
-cubemapTexture.i2 = new Image();
-cubemapTexture.i3 = new Image();
-cubemapTexture.i4 = new Image();
-cubemapTexture.i5 = new Image();
-cubemapTexture.i6 = new Image();
-    cubemapTexture.i1.onload = function() { handleCubemapTextureLoaded(cubemapTexture,1); }
-cubemapTexture.i2.onload = function() { handleCubemapTextureLoaded(cubemapTexture,2); }
-cubemapTexture.i3.onload = function() { handleCubemapTextureLoaded(cubemapTexture,3); }
-cubemapTexture.i4.onload = function() { handleCubemapTextureLoaded(cubemapTexture,4); }
-cubemapTexture.i5.onload = function() { handleCubemapTextureLoaded(cubemapTexture,5); }
-cubemapTexture.i6.onload = function() { handleCubemapTextureLoaded(cubemapTexture,6); }
-    cubemapTexture.i1.src = "./images/b3.jpg";
-    cubemapTexture.i2.src = "./images/b4.jpg";
-    cubemapTexture.i3.src = "./images/b5.jpg";
-    cubemapTexture.i4.src = "./images/b2.jpg";
-    cubemapTexture.i5.src = "./images/road.jpg";
-    cubemapTexture.i6.src = "./images/sky.jpg";
-}    
-function handleCubemapTextureLoaded(texture, num) {
-    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.REPEAT); 
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR); 
-
-	switch(num){
-	case 1:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.i1);
-	break
-        case 2: gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.i2);
-	break
-case 3:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.i3);
-break
-case 4:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.i4);
-break
-case 5:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.i5);
-break
-case 6:    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-		  texture.i6);
-break
-}    
-}
-
-
-
 //Texture variables, each for 1 specific texture
 
 var sampleTexture0;
@@ -101,6 +46,8 @@ var sampleTexture12;
 var sampleTexture13;
 var sampleTexture14;
 
+var sampleTexture15;
+
 function initTextures() {
 	sampleTexture0 = gl.createTexture();
 	sampleTexture0.image = new Image();
@@ -120,7 +67,7 @@ function initTextures() {
 	sampleTexture3 = gl.createTexture();
 	sampleTexture3.image = new Image();
 	sampleTexture3.image.onload = function() {handleTextureLoaded(sampleTexture3);}
-	sampleTexture3.image.src = './images/4.jpeg';
+	sampleTexture3.image.src = './images/4.jpg';
 
 	sampleTexture4 = gl.createTexture();
 	sampleTexture4.image = new Image();
@@ -135,22 +82,22 @@ function initTextures() {
 	sampleTexture6 = gl.createTexture();
 	sampleTexture6.image = new Image();
 	sampleTexture6.image.onload = function() {handleTextureLoaded(sampleTexture6);}
-	sampleTexture6.image.src = './images/6.jpeg';
+	sampleTexture6.image.src = './images/7.jpg';
 
 	sampleTexture7 = gl.createTexture();
 	sampleTexture7.image = new Image();
 	sampleTexture7.image.onload = function() {handleTextureLoaded(sampleTexture7);}
-	sampleTexture7.image.src = './images/7.jpeg';
+	sampleTexture7.image.src = './images/8.jpg';
 
 	sampleTexture8 = gl.createTexture();
 	sampleTexture8.image = new Image();
 	sampleTexture8.image.onload = function() {handleTextureLoaded(sampleTexture8);}
-	sampleTexture8.image.src = './images/ob1.png';
+	sampleTexture8.image.src = './images/ob1.jpg';
 
 	sampleTexture9 = gl.createTexture();
 	sampleTexture9.image = new Image();
 	sampleTexture9.image.onload = function() {handleTextureLoaded(sampleTexture9);}
-	sampleTexture9.image.src = './images/ob2.png';
+	sampleTexture9.image.src = './images/ob2.jpg';
 
 	sampleTexture10 = gl.createTexture();
 	sampleTexture10.image = new Image();
@@ -160,7 +107,7 @@ function initTextures() {
 	sampleTexture11 = gl.createTexture();
 	sampleTexture11.image = new Image();
 	sampleTexture11.image.onload = function() {handleTextureLoaded(sampleTexture11);}
-	sampleTexture11.image.src = './images/ob4.png';
+	sampleTexture11.image.src = './images/ob4.jpg';
 
 	sampleTexture12 = gl.createTexture();
 	sampleTexture12.image = new Image();
@@ -176,6 +123,11 @@ function initTextures() {
 	sampleTexture14.image = new Image();
 	sampleTexture14.image.onload = function() {handleTextureLoaded(sampleTexture14);}
 	sampleTexture14.image.src = './images/top.jpg';
+
+	sampleTexture15 = gl.createTexture();
+	sampleTexture15.image = new Image();
+	sampleTexture15.image.onload = function() {handleTextureLoaded(sampleTexture15);}
+	sampleTexture15.image.src = './images/ball.jpg';
 }
 
 function handleTextureLoaded(texture) {
@@ -276,6 +228,7 @@ function keyboardEvent(event){
 	ball_x+=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,0])
+	mat4.rotate(rMatrixb,-3.14/5,[0,1,0])
 
   }
   else if (event.keyCode == 83){ //Move Backward
@@ -285,6 +238,7 @@ function keyboardEvent(event){
 	ball_x-=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,0])
+	mat4.rotate(rMatrixb,3.14/5,[0,1,0])
   }
   else if( event.keyCode == 53||event.keyCode == 54){ //Zoom in and out
 	if(event.keyCode == 53) angle+=5;
@@ -299,6 +253,7 @@ function keyboardEvent(event){
 	ball_y+=0.5/rat
 		mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,0])
+	mat4.rotate(rMatrixb,-3.14/5,[1,0,0])
   }
   else if (event.keyCode == 65){	//Move left
 	//eye[0]+=.1;
@@ -307,6 +262,7 @@ function keyboardEvent(event){
 	ball_y-=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,0])
+	mat4.rotate(rMatrixb,3.14/5,[0,1,0])
 
   }
   else if (event.keyCode == 55){  // Rotate
@@ -427,11 +383,9 @@ for (var i=0;i<object_list.length;i++){
 }
 
 drawfloor([0,0,0],13)
-//drawfloor([0,0,-.55],14)
+drawfloor([0,0,-.55],14)
 
-line_switch = 0
-drawball([.3,.3,.3],[0,0,.065],0,1);
-line_switch = 0
+drawball([.3,.3,.3],[0,0,.065],0,15);
 
 
 drawbuildings()
@@ -455,6 +409,17 @@ add_light = 0;
 redraw()
 add_ambient = 0;
 mat_diffuse= [1,0,0,.1]
+
+c = square([1,1,1,0.5-trans[2]])
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.translate(mMatrix,[trans[0],trans[1],.1])
+mat4.scale(mMatrix,[.01,.01,.01])
+use_texture = 0
+line_switch  =1
+redraw()
+line_switch = 0
 }
 
 function drawbuildings(){
@@ -511,12 +476,11 @@ mat4.identity(mMatrix);
 mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
 mat4.multiply(mMatrix,cMatrixb,mMatrix)
-mat4.multiply(mMatrix,rMatrixb,mMatrix)
 mat4.translate(mMatrix,trans)
-mat4.rotate(mMatrix,rotat,[0,0,1])
+mat4.multiply(mMatrix,rMatrixb,mMatrix)
 mat4.scale(mMatrix,scal)
 mat4.scale(mMatrix,[.3,.3,.3])
-use_texture = 0;
+use_texture = 1;
 add_ambient = 0;
 mat_diffuse = [1,1,0,1]
 image_num = img;
@@ -558,6 +522,8 @@ gl.uniform4f(shaderProgram.light_specularUniform, light_specular[0], light_specu
 
 setMatrixUniforms();
 
+if (line_switch)
+	indices = lindices
 
 initBuffers()
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
@@ -600,6 +566,8 @@ switch(image_num){
 	break
 	case 14:texture2use = sampleTexture14;
 	break
+	case 15:texture2use = sampleTexture15;
+	break
 }
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
 gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
@@ -613,6 +581,7 @@ gl.uniform1i(shaderProgram.cube_map_textureUniform, 1);   // pass the texture un
 
 if (line_switch)
  gl.drawElements(gl.LINES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0); 					
+
 else
 gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0); 					
 
