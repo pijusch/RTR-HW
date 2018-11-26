@@ -23,7 +23,7 @@ var ball_x = 0
 var ball_y = 0.1
 
 
-max_objects = 10;
+max_objects = 5;
 
 
 //Cube Map (loading images)
@@ -92,6 +92,15 @@ var sampleTexture5;
 var sampleTexture6;
 var sampleTexture7;
 
+var sampleTexture8;
+var sampleTexture9;
+var sampleTexture10;
+var sampleTexture11;
+var sampleTexture12;
+
+var sampleTexture13;
+var sampleTexture14;
+
 function initTextures() {
 	sampleTexture0 = gl.createTexture();
 	sampleTexture0.image = new Image();
@@ -132,6 +141,41 @@ function initTextures() {
 	sampleTexture7.image = new Image();
 	sampleTexture7.image.onload = function() {handleTextureLoaded(sampleTexture7);}
 	sampleTexture7.image.src = './images/7.jpeg';
+
+	sampleTexture8 = gl.createTexture();
+	sampleTexture8.image = new Image();
+	sampleTexture8.image.onload = function() {handleTextureLoaded(sampleTexture8);}
+	sampleTexture8.image.src = './images/ob1.png';
+
+	sampleTexture9 = gl.createTexture();
+	sampleTexture9.image = new Image();
+	sampleTexture9.image.onload = function() {handleTextureLoaded(sampleTexture9);}
+	sampleTexture9.image.src = './images/ob2.png';
+
+	sampleTexture10 = gl.createTexture();
+	sampleTexture10.image = new Image();
+	sampleTexture10.image.onload = function() {handleTextureLoaded(sampleTexture10);}
+	sampleTexture10.image.src = './images/ob3.png';
+
+	sampleTexture11 = gl.createTexture();
+	sampleTexture11.image = new Image();
+	sampleTexture11.image.onload = function() {handleTextureLoaded(sampleTexture11);}
+	sampleTexture11.image.src = './images/ob4.png';
+
+	sampleTexture12 = gl.createTexture();
+	sampleTexture12.image = new Image();
+	sampleTexture12.image.onload = function() {handleTextureLoaded(sampleTexture12);}
+	sampleTexture12.image.src = './images/ob5.png';
+
+	sampleTexture13 = gl.createTexture();
+	sampleTexture13.image = new Image();
+	sampleTexture13.image.onload = function() {handleTextureLoaded(sampleTexture13);}
+	sampleTexture13.image.src = './images/floor.jpg';
+
+	sampleTexture14 = gl.createTexture();
+	sampleTexture14.image = new Image();
+	sampleTexture14.image.onload = function() {handleTextureLoaded(sampleTexture14);}
+	sampleTexture14.image.src = './images/top.jpg';
 }
 
 function handleTextureLoaded(texture) {
@@ -167,7 +211,7 @@ var back_color = [1,1,1,1]
   var light_ambient = [0,1,0,1]; 
   var light_diffuse = [.8,.8,.8,1];
   var light_specular = [1,1,1,1]; 
-  var light_pos = [0,0,0,1];   // eye space position 
+  var light_pos = [0,-1,0,1];   // eye space position 
 
   var mat_ambient = [0, 0, 0, 1]; 
   var mat_diffuse= [1, 0, 0, .1]; 
@@ -182,8 +226,8 @@ var vertexColorBuffer;
 var vertexIndexBuffer;
 var vertexNormalBuffer;
 var vertexTextureCoordBuffer;
-var eye = [-0.25,-1+.5,-0.2]
-var point = [-0.25,0.6+.5,0]
+var eye = [-0.25,-1+.9,-0.2]
+var point = [-0.25,0.6+.9,0]
 var up = [0,1,0]
 
 
@@ -228,7 +272,7 @@ function keyboardEvent(event){
   if (event.keyCode == 87){	//Move Forward
 	//eye[1]+=.1;
 	//point[1]+=.1;
-	if (ball_x<=1.2)
+	if (ball_x<=1.85)
 	ball_x+=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,0])
@@ -237,7 +281,7 @@ function keyboardEvent(event){
   else if (event.keyCode == 83){ //Move Backward
 	//eye[1]-=.1;
 	//point[1]-=.1;
-	if (ball_x>=-.02)
+	if (ball_x>=-.05)
 	ball_x-=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,0])
@@ -251,7 +295,7 @@ function keyboardEvent(event){
   else if (event.keyCode == 68){ //Move Right
 		//eye[0]-=.1;
 	//point[0]-=.1;
-	if(ball_y<=.3)
+	if(ball_y<=.4)
 	ball_y+=0.5/rat
 		mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,0])
@@ -363,22 +407,27 @@ function setMatrixUniforms() {
 //Calls all the drawing function with arguments
 
 
-function drawfloor(){
+function drawfloor(trans,img){
 	c = square()
 	mat4.identity(mMatrix);
 	mat4.multiply(mMatrix,cMatrix1,mMatrix)
 	mat4.multiply(mMatrix,rMatrix1,mMatrix)
-	mat4.translate(mMatrix,[0,0,.1])
+	mat4.translate(mMatrix,trans)
+	mat4.translate(mMatrix,[.87,.25,.15])
+	mat4.scale(mMatrix,[.2,.05,.1])
+	use_texture = 1
+	image_num = img
 	redraw()
 }
 
 function drawWorld(){
 
 for (var i=0;i<object_list.length;i++){
-	drawobject(object_list[i][0],object_list[i][1],0,0)
+	drawobject(object_list[i][0],object_list[i][1],0,object_list[i][2])
 }
 
-drawfloor()
+drawfloor([0,0,0],13)
+//drawfloor([0,0,-.55],14)
 
 line_switch = 0
 drawball([.3,.3,.3],[0,0,.065],0,1);
@@ -398,7 +447,7 @@ mat4.translate(mMatrix,trans)
 mat4.rotate(mMatrix,rotat,[0,0,1])
 mat4.scale(mMatrix,scal)
 mat4.scale(mMatrix,[.3,.3,.3])
-use_texture = 0;
+use_texture = 1;
 add_ambient = 0;
 mat_diffuse = [1,1,0,1]
 image_num = img;
@@ -410,26 +459,28 @@ mat_diffuse= [1,0,0,.1]
 
 function drawbuildings(){
 
-drawbuilding([2,.4,2.6],[0,0,0],0,1);
-drawbuilding([2,.4,3],[.17,0,0],0,2);
-drawbuilding([2,.4,3],[.34,0,0],0,3);
-drawbuilding([2,.4,3],[.51,0,0],0,4);
-drawbuilding([2,.4,3],[.68,0,0],0,5);
-drawbuilding([2,.4,3],[.85,0,0],0,6);
-drawbuilding([2,.4,3],[1.02,0,0],0,7);
-drawbuilding([2,.4,3],[1.19,0,0],0,0);
+drawbuilding([5.8,.4,7],[-.11,.24,0],3.14/2,1);
+drawbuilding([5.8,.4,7],[-.11+2,.24,0],3.14/2,1);
 
 
+drawbuilding([3,.4,7],[0,0,0],0,1);
+drawbuilding([3,.4,7],[.25,0,0],0,2);
+drawbuilding([3,.4,7],[.50,0,0],0,3);
+drawbuilding([3,.4,7],[.75,0,0],0,4);
+drawbuilding([3,.4,7],[1,0,0],0,5);
+drawbuilding([3,.4,7],[1.25,0,0],0,6);
+drawbuilding([3,.4,7],[1.50,0,0],0,7);
+drawbuilding([3,.4,7],[1.75,0,0],0,0);
 
 
-drawbuilding([2,.4,2.6],[0,.5,0],0,1);
-drawbuilding([2,.4,3],[.17,.5,0],0,2);
-drawbuilding([2,.4,3],[.34,.5,0],0,3);
-drawbuilding([2,.4,3],[.51,.5,0],0,4);
-drawbuilding([2,.4,3],[.68,.5,0],0,5);
-drawbuilding([2,.4,3],[.85,.5,0],0,6);
-drawbuilding([2,.4,3],[1.02,.5,0],0,7);
-drawbuilding([2,.4,3],[1.19,.5,0],0,0);
+drawbuilding([3,.4,7],[0,0.5,0],0,1);
+drawbuilding([3,.4,7],[.25,0.5,0],0,2);
+drawbuilding([3,.4,7],[.50,0.5,0],0,3);
+drawbuilding([3,.4,7],[.75,0.5,0],0,4);
+drawbuilding([3,.4,7],[1,0.5,0],0,5);
+drawbuilding([3,.4,7],[1.25,0.5,0],0,6);
+drawbuilding([3,.4,7],[1.50,0.5,0],0,7);
+drawbuilding([3,.4,7],[1.75,0.5,0],0,0);
 
 }
 
@@ -518,7 +569,7 @@ gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, vertexNormalBuffer.i
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexTextureCoordBuffer);
 gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-	switch(image_num){
+switch(image_num){
 	case 0: texture2use = sampleTexture0;
 	break
 	case 1:texture2use = sampleTexture1;
@@ -535,7 +586,21 @@ gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, vertexTextureCoor
 	break
 	case 7:texture2use = sampleTexture7;
 	break
-	}
+	case 8:texture2use = sampleTexture8;
+	break
+	case 9:texture2use = sampleTexture9;
+	break
+	case 10:texture2use = sampleTexture10;
+	break
+	case 11:texture2use = sampleTexture11;
+	break
+	case 12:texture2use = sampleTexture12;
+	break
+	case 13:texture2use = sampleTexture13;
+	break
+	case 14:texture2use = sampleTexture14;
+	break
+}
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
 gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
 gl.bindTexture(gl.TEXTURE_2D, texture2use);    // bind the texture object to the texture unit 
@@ -642,27 +707,27 @@ remove();
 function check(){
 	for (var i=0;i<object_list.length;i++){
 		if(object_list[i][1][2] >= 0){
-			if (intersection(ball_x,ball_y,object_list[i][1][0],object_list[i][1][1]))
+			if (intersection(ball_x,ball_y,object_list[i][1][0],object_list[i][1][1],object_list[i][0]))
 				alert('game over')
 		}
 	}
 }
 
-function intersection(bx,by,ox,oy){
-return !( (bx+0.03 < ox-0.035) || (bx-0.03 > ox+0.035) ||  (by+0.03 < oy-0.035) || (by-0.03 > oy+0.035))
+function intersection(bx,by,ox,oy,size){
+return !( (bx+0.03 < ox-0.035*size[0]) || (bx-0.03 > ox+0.035*size[0]) ||  (by+0.03 < oy-0.035*size[1]) || (by-0.03 > oy+0.035*size[1]))
 
 
 }
 
 function add(){
 	while(object_list.length < max_objects){
-		object_list.push([[1,1,1],[rand(0,1.2),rand(.05,.4),rand(-.4,-.2)]])
+		object_list.push([[1,1,1],[rand(0,1.2),rand(.05,.4),rand(-.4,-.2)],8+Math.ceil(Math.random()*100)%5])
 	}
 }
 
 function remove(){
 	for (var i=0;i<object_list.length;i++){
-		if (object_list[i][1][2] > .1){//0+.06){
+		if (object_list[i][1][2] > 0.06){//0+.06){
 			object_list = object_list.splice(0,i).concat(object_list.splice(i+1,object_list.length))
 			remove()
 		}
