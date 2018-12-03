@@ -3,8 +3,6 @@ var trap_list = [];
 var use_texture = 0; 
 var use_dnd = 0;
 var use_line = 0;
-var add_light = 0;
-var add_ambient = 0;
 var image_num = 0;
 var that_shape = [0];
 var image_set = [0,1,2,3];
@@ -14,16 +12,15 @@ var ball_z = .2
 
 var r_angle = 0;
 
-max_objects = 5;
+max_objects = 1;
 
 
-//Texture variables, each for 1 specific texture
 
 var sampleTexture0;
 var sampleTexture1;
 var sampleTexture2;
 var sampleTexture3;
-
+var sampleTexture4;
 var sampleTexture15;
 
 function initTextures() {
@@ -46,6 +43,11 @@ function initTextures() {
 	sampleTexture3.image = new Image();
 	sampleTexture3.image.onload = function() {handleTextureLoaded(sampleTexture3);}
 	sampleTexture3.image.src = './images/top.jpg';
+
+	sampleTexture4 = gl.createTexture();
+	sampleTexture4.image = new Image();
+	sampleTexture4.image.onload = function() {handleTextureLoaded(sampleTexture4);}
+	sampleTexture4.image.src = './images/danger.jpg';
 
 	sampleTexture15 = gl.createTexture();
 	sampleTexture15.image = new Image();
@@ -75,17 +77,6 @@ var back_color = [1,1,1,1]
  var pMatrix = mat4.create();  //projection matrix
  var nMatrix = mat4.create();  // normal matrix
  var v2wMatrix = mat4.create();
-
-// set up the parameters for lighting 
-  var light_ambient = [0,1,0,1]; 
-  var light_diffuse = [.8,.8,.8,1];
-  var light_specular = [1,1,1,1]; 
-  var light_pos = [0,-1,0,1];   // eye space position 
-
-  var mat_ambient = [0, 0, 0, 1]; 
-  var mat_diffuse= [1, 0, 0, .1]; 
-  var mat_specular = [.9, .9, .9,1]; 
-  var mat_shine = [50]; 
 
 
 var gl;
@@ -126,8 +117,6 @@ mat4.translate(cMatrixb,[ball_x,ball_y,0])
 var rMatrixb = mat4.create();
 mat4.identity(rMatrixb);
 
-var smRotate = mat4.create();
-mat4.identity(smRotate);
 
 var angle = 50; //view angle
 
@@ -225,12 +214,10 @@ function keyboardEvent(event){
 	}
   }
   else if (event.keyCode == 55){  // Rotate]
-		r_angle-=1;
-		mat4.rotate(rMatrix1,3.14/2,[0,0,1])
+
   }
 else if (event.keyCode == 56){    // Rotate Opposite
-		r_angle+=1;
-	mat4.rotate(rMatrix1,-3.14/2,[0,0,1])
+
   }
   else if (event.keyCode == 57){  // Rotate
 		mat4.rotate(rMatrix1,3.14/10,[0,1,0])
@@ -314,30 +301,20 @@ else if (event.keyCode ==75){   // Sphere Back
 //HTML buttons
 
 function buttonEvent(arg){ /** Handles Button Events **/
-   button = arg;
-   if( arg==0)	//
-	{	if (pottex !=1)
-		pottex = 1
-		else
-		pottex = 0
-		image_set = [Math.ceil(Math.random()*10)%7,Math.ceil(Math.random()*10)%7,Math.ceil(Math.random()*10)%7,Math.ceil(Math.random()*10)%7]
+   if( arg==1)	//
+	{
+				r_angle+=1;
+		mat4.rotate(rMatrix1,-3.14/2,[0,0,1])	
 	}
-   else if(arg==1){
-		if(pottex !=2)
-	 	pottex = 2
-		else pottex =0
+   else if(arg==0){
+				r_angle-=1;
+		mat4.rotate(rMatrix1,3.14/2,[0,0,1])
 	}
     else if (arg==2){
-		potdif = !potdif
+		max_objects+=1;
 	}
-    else if (arg == 3){
-		potlit = !potlit
-	}
-    else if(arg == 4){
+    else if(arg == 3){
 		use_line = !use_line
-	}
-    else if(arg == 5){
-		that_shape = [Math.ceil(Math.random()*100)%3, Math.ceil(Math.random()*100)%10+1];
 	}
    drawScene();
 }
@@ -378,6 +355,7 @@ drawfloor([1,1,1],[0,0,.1],0)
 drawfloor([10,10,1],[0,0,-.6],3)
 drawball([.3,.3,.3],[0,0,0],0,15);
 drawTrap(trap_list[0][0],trap_list[0][1],0,trap_list[0][2])
+drawTrap(trap_list[1][0],trap_list[1][1],0,trap_list[1][2])
 drawbuildings()
 
 }
@@ -391,7 +369,8 @@ mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,[trans[0],trans[1],.24])
 mat4.scale(mMatrix,scal)
 mat4.scale(mMatrix,[.008,.008,.008])
-use_texture = 0
+image_num = 4
+use_texture = 1
 line_switch  = 0
 redraw()
 line_switch = 0
@@ -491,30 +470,12 @@ mat_diffuse= [1,0,0,.1]
 function redraw(){ //Buffer initiallization when objects are drawn
 gl.uniform1i(shaderProgram.use_textureUniform, use_texture);
 gl.uniform1i(shaderProgram.use_dndUniform, use_dnd);
-gl.uniform1i(shaderProgram.add_ambientUniform, add_ambient);
-gl.uniform1i(shaderProgram.add_lightUniform, add_light);
 
 mat4.identity(nMatrix); 
 nMatrix = mat4.multiply(nMatrix, vMatrix);
 nMatrix = mat4.multiply(nMatrix, mMatrix); 	
 nMatrix = mat4.inverse(nMatrix);
-nMatrix = mat4.transpose(nMatrix);
-
-
-mat4.identity(v2wMatrix);
-v2wMatrix = mat4.multiply(v2wMatrix, vMatrix);     
-v2wMatrix = mat4.transpose(v2wMatrix)
-
-shaderProgram.light_posUniform = gl.getUniformLocation(shaderProgram, "light_pos");
-gl.uniform4f(shaderProgram.light_posUniform,light_pos[0], light_pos[1], light_pos[2], light_pos[3]); 	
-gl.uniform4f(shaderProgram.ambient_coefUniform, mat_ambient[0], mat_ambient[1], mat_ambient[2], 1.0); 
-gl.uniform4f(shaderProgram.diffuse_coefUniform, mat_diffuse[0], mat_diffuse[1], mat_diffuse[2], 1.0); 
-gl.uniform4f(shaderProgram.specular_coefUniform, mat_specular[0], mat_specular[1], mat_specular[2],1.0); 
-gl.uniform1f(shaderProgram.shininess_coefUniform, mat_shine[0]); 
-
-gl.uniform4f(shaderProgram.light_ambientUniform, light_ambient[0], light_ambient[1], light_ambient[2], 1.0); 
-gl.uniform4f(shaderProgram.light_diffuseUniform, light_diffuse[0], light_diffuse[1], light_diffuse[2], 1.0); 
-gl.uniform4f(shaderProgram.light_specularUniform, light_specular[0], light_specular[1], light_specular[2],1.0); 
+nMatrix = mat4.transpose(nMatrix); 
 
 setMatrixUniforms();
 
@@ -540,9 +501,10 @@ switch(image_num){
 	break
 	case 3:texture2use = sampleTexture3;
 	break
+	case 4:texture2use = sampleTexture4;
+	break
 	case 15:texture2use = sampleTexture15;
 	break
-	default:texture2use = sampleTexture0;
 }
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
 gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
@@ -601,24 +563,9 @@ function sleep (time) {
         shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
 	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
 	shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
-	shaderProgram.v2wMatrixUniform = gl.getUniformLocation(shaderProgram, "uV2WMatrix");	
-
-        shaderProgram.light_posUniform = gl.getUniformLocation(shaderProgram, "light_pos");
-        shaderProgram.ambient_coefUniform = gl.getUniformLocation(shaderProgram, "ambient_coef");	
-        shaderProgram.diffuse_coefUniform = gl.getUniformLocation(shaderProgram, "diffuse_coef");
-        shaderProgram.specular_coefUniform = gl.getUniformLocation(shaderProgram, "specular_coef");
-        shaderProgram.shininess_coefUniform = gl.getUniformLocation(shaderProgram, "mat_shininess");
-
-        shaderProgram.light_ambientUniform = gl.getUniformLocation(shaderProgram, "light_ambient");	
-        shaderProgram.light_diffuseUniform = gl.getUniformLocation(shaderProgram, "light_diffuse");
-        shaderProgram.light_specularUniform = gl.getUniformLocation(shaderProgram, "light_specular");
 
 	shaderProgram.textureUniform = gl.getUniformLocation(shaderProgram, "myTexture");
-	shaderProgram.cube_map_textureUniform = gl.getUniformLocation(shaderProgram, "cubeMap");
 	shaderProgram.use_textureUniform = gl.getUniformLocation(shaderProgram, "use_texture");
-	shaderProgram.use_dndUniform = gl.getUniformLocation(shaderProgram, "use_dnd");
-	shaderProgram.add_lightUniform = gl.getUniformLocation(shaderProgram, "add_light");
-	shaderProgram.add_ambientUniform = gl.getUniformLocation(shaderProgram, "add_ambient");
 	initTextures();
 	alert('loaded the images');
 
@@ -639,15 +586,17 @@ function sleep (time) {
 var check_flag = 0
 
 function check_rise(){
-	  return intersection(ball_x,ball_y,trap_list[0][1][0],trap_list[0][1][1],trap_list[0][0])
+	  if (intersection(ball_x,ball_y,trap_list[0][1][0],trap_list[0][1][1],trap_list[0][0]) || intersection(ball_x,ball_y,trap_list[1][1][0],trap_list[1][1][1],trap_list[1][0]))
+		check_flag =1
 	}
 
 
     function continous(){
 	if(check_flag){
 		ball_z-=0.005
+		if (ball_z<-.4)
+		alert('game over')
 		mat4.identity(cMatrixb)
-		check_flag = 1
 	  mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	}
 	else if (ball_z < .2){ ball_z+=0.005;
@@ -661,7 +610,7 @@ for(var i=0;i<object_list.length;i++){
 check();
 add();
 remove();
-check_flag = check_rise();
+check_rise();
  }
 
 
@@ -686,7 +635,8 @@ function add(){
 		object_list.push([[Math.random()+1,Math.random()+1,1],[rand(0,1.2),rand(.05,.4)+1.55,rand(-.4,-.2)],1])
 	}
 	while(trap_list.length < 1){
-		trap_list.push([[4,4,1],[rand(2,2.25),rand(0,2),rand(-.4,-.2)],1])
+		trap_list.push([[3,8,1],[rand(2,2.25),rand(0,2),rand(-.4,-.2)],1])
+		trap_list.push([[3,8,1],[rand(-.6,-.1),rand(0,2),rand(-.4,-.2)],1])
 	}
 }
 
