@@ -1,4 +1,5 @@
 var object_list = [];
+var trap_list = [];
 var use_texture = 0; 
 var use_dnd = 0;
 var use_line = 0;
@@ -376,10 +377,24 @@ for (var i=0;i<object_list.length;i++){
 drawfloor([1,1,1],[0,0,.1],0)
 drawfloor([10,10,1],[0,0,-.6],3)
 drawball([.3,.3,.3],[0,0,0],0,15);
-
-
+drawTrap(trap_list[0][0],trap_list[0][1],0,trap_list[0][2])
 drawbuildings()
 
+}
+
+
+function drawTrap(scal,trans,rotat,img){
+c = square([1,0,0,1])
+mat4.identity(mMatrix);
+mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.translate(mMatrix,[trans[0],trans[1],.24])
+mat4.scale(mMatrix,scal)
+mat4.scale(mMatrix,[.008,.008,.008])
+use_texture = 0
+line_switch  = 0
+redraw()
+line_switch = 0
 }
 
 function drawobject(scal,trans,rotat,img){
@@ -616,20 +631,20 @@ function sleep (time) {
 	continous()
 	drawScene()
 	})
-		if(c==100000)
+		if(c==10000)
 		break
 	}
     }
 
 var check_flag = 0
 
-function check_fall(){
-	//return ball_x>1.25
+function check_rise(){
+	  return intersection(ball_x,ball_y,trap_list[0][1][0],trap_list[0][1][1],trap_list[0][0])
 	}
 
 
     function continous(){
-	if( check_fall()||check_flag){
+	if(check_flag){
 		ball_z-=0.005
 		mat4.identity(cMatrixb)
 		check_flag = 1
@@ -646,6 +661,7 @@ for(var i=0;i<object_list.length;i++){
 check();
 add();
 remove();
+check_flag = check_rise();
  }
 
 
@@ -665,9 +681,12 @@ return !( (bx+0.03 < ox-0.035*size[0]) || (bx-0.03 > ox+0.035*size[0]) ||  (by+0
 }
 
 function add(){
-	while(object_list.length < max_objects){
+	while(object_list.length < max_objects){		
 		object_list.push([[Math.random()+1,Math.random()+1,1],[rand(-.5,1.5),rand(.05,.4),rand(-.4,-.2)],1])
 		object_list.push([[Math.random()+1,Math.random()+1,1],[rand(0,1.2),rand(.05,.4)+1.55,rand(-.4,-.2)],1])
+	}
+	while(trap_list.length < 1){
+		trap_list.push([[4,4,1],[rand(2,2.25),rand(0,2),rand(-.4,-.2)],1])
 	}
 }
 
