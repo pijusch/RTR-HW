@@ -1,22 +1,10 @@
-
-/**Global Variables
-**/
-
-//sphere 0.07
-//objects 0.035
-
 var object_list = [];
-
 var use_texture = 0; 
 var use_dnd = 0;
 var use_line = 0;
 var add_light = 0;
 var add_ambient = 0;
-var cubemapTexture;
 var image_num = 0;
-var pottex = 0;
-var potdif = 0;
-var potlit = 0;
 var that_shape = [0];
 var image_set = [0,1,2,3];
 var ball_x = 0
@@ -25,7 +13,7 @@ var ball_z = .2
 
 var r_angle = 0;
 
-max_objects = 1;
+max_objects = 5;
 
 
 //Texture variables, each for 1 specific texture
@@ -34,19 +22,6 @@ var sampleTexture0;
 var sampleTexture1;
 var sampleTexture2;
 var sampleTexture3;
-var sampleTexture4;
-var sampleTexture5;
-var sampleTexture6;
-var sampleTexture7;
-
-var sampleTexture8;
-var sampleTexture9;
-var sampleTexture10;
-var sampleTexture11;
-var sampleTexture12;
-
-var sampleTexture13;
-var sampleTexture14;
 
 var sampleTexture15;
 
@@ -54,7 +29,7 @@ function initTextures() {
 	sampleTexture0 = gl.createTexture();
 	sampleTexture0.image = new Image();
 	sampleTexture0.image.onload = function() {handleTextureLoaded(sampleTexture0);}
-	sampleTexture0.image.src = './images/1.jpg';
+	sampleTexture0.image.src = './images/floor.jpg';
 
 	sampleTexture1 = gl.createTexture();
 	sampleTexture1.image = new Image();
@@ -65,6 +40,11 @@ function initTextures() {
 	sampleTexture2.image = new Image();
 	sampleTexture2.image.onload = function() {handleTextureLoaded(sampleTexture2);}
 	sampleTexture2.image.src = './images/3.jpg';
+
+	sampleTexture3 = gl.createTexture();
+	sampleTexture3.image = new Image();
+	sampleTexture3.image.onload = function() {handleTextureLoaded(sampleTexture3);}
+	sampleTexture3.image.src = './images/top.jpg';
 
 	sampleTexture15 = gl.createTexture();
 	sampleTexture15.image = new Image();
@@ -163,43 +143,85 @@ function check_ball(ball_x,ball_y){
 
 }
 
-function keyboardEvent(event){
-	rat = 10
-  if (event.keyCode == 87){	//Move Forward
+function forward(){
 	if (check_ball(ball_x+0.5/rat,ball_y))
 	ball_x+=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	mat4.rotate(rMatrixb,-3.14/5,[0,1,0])
+}
 
-  }
-  else if (event.keyCode == 83){ //Move Backward
-	//eye[1]-=.1;
-	//point[1]-=.1;
+function backward(){
 	if (check_ball(ball_x-0.5/rat,ball_y))
 	ball_x-=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	mat4.rotate(rMatrixb,3.14/5,[0,1,0])
-  }
-  else if (event.keyCode == 68){ //Move Right
-		//eye[0]-=.1;
-	//point[0]-=.1;
-	if(check_ball(ball_x,ball_y+0.5/rat))
+
+}
+
+function right(){
+if(check_ball(ball_x,ball_y+0.5/rat))
 	ball_y+=0.5/rat
 		mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	mat4.rotate(rMatrixb,-3.14/5,[1,0,0])
-  }
-  else if (event.keyCode == 65){	//Move left
-	//eye[0]+=.1;
-	//point[0]+=.1;
+}
+
+function left(){
 	if(check_ball(ball_x,ball_y-0.5/rat))
 	ball_y-=0.5/rat
 	mat4.identity(cMatrixb)
 	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	mat4.rotate(rMatrixb,3.14/5,[1,0,0])
+}
 
+function keyboardEvent(event){
+	rat = 10
+  if (event.keyCode == 87){	//Move Forward
+	switch(r_angle%4){
+		case 0:	forward()
+		break;
+		case 1: right()
+		break;
+		case 2:  backward()
+		break;
+		case 3: left()
+	}
+
+  }
+  else if (event.keyCode == 83){ //Move Backward
+	switch(r_angle%4){
+		case 0:	backward()
+		break;
+		case 1: left()
+		break;
+		case 2:  forward()
+		break;
+		case 3: right()
+	}
+  }
+  else if (event.keyCode == 68){ //Move Right
+	switch(r_angle%4){
+		case 3:	forward()
+		break;
+		case 0: right()
+		break;
+		case 1:  backward()
+		break;
+		case 2: left()
+	}
+  }
+  else if (event.keyCode == 65){	//Move left
+	switch(r_angle%4){
+		case 1:	forward()
+		break;
+		case 2: right()
+		break;
+		case 3:  backward()
+		break;
+		case 0: left()
+	}
   }
   else if (event.keyCode == 55){  // Rotate]
 		r_angle-=1;
@@ -237,8 +259,6 @@ else if (event.keyCode ==74){   // Sphere Back
 	mat4.translate(cMatrix1,[0,-.1,0])
 	else
 	mat4.translate(cMatrix1,[.1,0,0])
-	//eye[0]+=.1;
-	//point[0]+=.1;
   }
 else if (event.keyCode ==76){   // Sphere Back
 	if(r_angle%4==0)
@@ -249,8 +269,6 @@ else if (event.keyCode ==76){   // Sphere Back
 	mat4.translate(cMatrix1,[0,.1,0])
 	else
 	mat4.translate(cMatrix1,[-.1,0,0])
-	//eye[0]-=.1;
-	//point[0]-=.1;
   }
 else if (event.keyCode ==73){   // Sphere Back
 	if(r_angle%4==0)
@@ -261,8 +279,7 @@ else if (event.keyCode ==73){   // Sphere Back
 	mat4.translate(cMatrix1,[.1,0,0])
 	else
 	mat4.translate(cMatrix1,[0,.1,0])
-	//eye[1]+=.1;
-	//point[1]+=.1;
+
   }
 else if (event.keyCode ==75){   // Sphere Back
 	if(r_angle%4==0)
@@ -273,8 +290,6 @@ else if (event.keyCode ==75){   // Sphere Back
 	mat4.translate(cMatrix1,[-.1,0,0])
 	else
 	mat4.translate(cMatrix1,[0,-.1,0])
-	//eye[1]-=.1;
-	//point[1]-=.1;
   }
 
   vMatrix = mat4.lookAt(eye,point,up);
@@ -338,50 +353,15 @@ function setMatrixUniforms() {
 
 
 
-function drawfloor(trans,img){
+function drawfloor(scal,trans,img){
 	c = square()
 	mat4.identity(mMatrix);
 	mat4.multiply(mMatrix,rMatrix1,mMatrix)
 	mat4.multiply(mMatrix,cMatrix1,mMatrix)
 	mat4.translate(mMatrix,trans)
-	mat4.translate(mMatrix,[.87,.25,.15])
-	mat4.scale(mMatrix,[.2,.05,.1])
-	use_texture = 1
-	image_num = img
-	redraw()
-
-
-	c = square()
-	mat4.identity(mMatrix);
-	mat4.multiply(mMatrix,rMatrix1,mMatrix)
-	mat4.multiply(mMatrix,cMatrix1,mMatrix)
-	mat4.translate(mMatrix,trans)
-	mat4.translate(mMatrix,[.87,.25+1.5,.15])
-	mat4.scale(mMatrix,[.2,.05,.1])
-	use_texture = 1
-	image_num = img
-	redraw()
-
-	c = square()
-	mat4.identity(mMatrix);
-	mat4.multiply(mMatrix,rMatrix1,mMatrix)
-	mat4.multiply(mMatrix,cMatrix1,mMatrix)
-	mat4.translate(mMatrix,trans)
-	mat4.translate(mMatrix,[.87-1.24,.25+.75,.15])
-	mat4.rotate(mMatrix,3.14/2,[0,0,1])
-	mat4.scale(mMatrix,[.2,.05,.1])
-	use_texture = 1
-	image_num = img
-	redraw()
-
-	c = square()
-	mat4.identity(mMatrix);
-	mat4.multiply(mMatrix,rMatrix1,mMatrix)
-	mat4.multiply(mMatrix,cMatrix1,mMatrix)
-	mat4.translate(mMatrix,trans)
-	mat4.translate(mMatrix,[.87+1.24,.25+.75,.15])
-	mat4.rotate(mMatrix,3.14/2,[0,0,1])
-	mat4.scale(mMatrix,[.2,.05,.1])
+	mat4.translate(mMatrix,[.87,1,.15])
+	mat4.scale(mMatrix,[.2*1.5,.05*4,.1])
+	mat4.scale(mMatrix,scal)
 	use_texture = 1
 	image_num = img
 	redraw()
@@ -393,9 +373,8 @@ for (var i=0;i<object_list.length;i++){
 	drawobject(object_list[i][0],object_list[i][1],0,object_list[i][2])
 }
 
-drawfloor([0,0,.1],0)
-drawfloor([0,0,-.4],0)
-
+drawfloor([1,1,1],[0,0,.1],0)
+drawfloor([10,10,1],[0,0,-.6],3)
 drawball([.3,.3,.3],[0,0,0],0,15);
 
 
@@ -432,80 +411,21 @@ line_switch = 0
 function drawbuildings(){
 
 
-drawbuilding([3,.4,7],[-.50,0,0],0,2);
-drawbuilding([3,.4,7],[-.25,0,0],0,2);
-drawbuilding([3,.4,7],[0,0,0],0,2);
-drawbuilding([3,.4,7],[.25,0,0],0,2);
-drawbuilding([3,.4,7],[.50,0,0],0,2);
-drawbuilding([3,.4,7],[.75,0,0],0,2);
-drawbuilding([3,.4,7],[1,0,0],0,2);
-drawbuilding([3,.4,7],[1.25,0,0],0,2);
-drawbuilding([3,.4,7],[1.50,0,0],0,2);
-drawbuilding([3,.4,7],[1.75,0,0],0,2);
-drawbuilding([3,.4,7],[2.0,0,0],0,2);
-drawbuilding([3,.4,7],[2.25,0,0],0,2);
+drawbuilding([12,1,1],[.875,0,0],0,2);
 
+drawbuilding([8,1,1],[.89,0.5,0],0,2);
 
-drawbuilding([3,.4,7],[0,0.5,0],0,2);
-drawbuilding([3,.4,7],[.25,0.5,0],0,2);
-drawbuilding([3,.4,7],[.50,0.5,0],0,2);
-drawbuilding([3,.4,7],[.75,0.5,0],0,2);
-drawbuilding([3,.4,7],[1,0.5,0],0,2);
-drawbuilding([3,.4,7],[1.25,0.5,0],0,2);
-drawbuilding([3,.4,7],[1.50,0.5,0],0,2);
-drawbuilding([3,.4,7],[1.75,0.5,0],0,2);
+drawbuilding([8,1,1],[2.36,1,0],3.14/2,2);
 
-drawbuilding([3,.4,7],[2.38,0.12,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.38,0.12+.25,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.38,0.12+.50,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.38,0.12+.75,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.38,0.12+1.0,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.38,0.12+1.25,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.38,0.12+1.50,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.38,0.12+1.75,0],3.14/2,2);
+drawbuilding([4,1,1],[1.88,1,0],3.14/2,2);
 
-drawbuilding([3,.4,7],[1.89,0.62,0],3.14/2,2);
-drawbuilding([3,.4,7],[1.89,0.62+.25,0],3.14/2,2);
-drawbuilding([3,.4,7],[1.89,0.62+.5,0],3.14/2,2);
-drawbuilding([3,.4,7],[1.89,0.62+.75,0],3.14/2,2);
+drawbuilding([8,1,1],[.875,1.498,0],0,2);
 
-drawbuilding([3,.4,7],[0,1.495,0],0,2);
-drawbuilding([3,.4,7],[.25,1.495,0],0,2);
-drawbuilding([3,.4,7],[.50,1.495,0],0,2);
-drawbuilding([3,.4,7],[.75,1.495,0],0,2);
-drawbuilding([3,.4,7],[1,1.495,0],0,2);
-drawbuilding([3,.4,7],[1.25,1.495,0],0,2);
-drawbuilding([3,.4,7],[1.50,1.495,0],0,2);
-drawbuilding([3,.4,7],[1.75,1.495,0],0,2);
+drawbuilding([12,1,1],[0.875,2,0],0,2);
 
+drawbuilding([8,1,1],[2.39-3,1,0],3.14/2,2);
 
-drawbuilding([3,.4,7],[-.5,1.98,0],0,2);
-drawbuilding([3,.4,7],[-.25,1.98,0],0,2);
-drawbuilding([3,.4,7],[0,1.98,0],0,2);
-drawbuilding([3,.4,7],[.25,1.98,0],0,2);
-drawbuilding([3,.4,7],[.50,1.98,0],0,2);
-drawbuilding([3,.4,7],[.75,1.98,0],0,2);
-drawbuilding([3,.4,7],[1,1.98,0],0,2);
-drawbuilding([3,.4,7],[1.25,1.98,0],0,2);
-drawbuilding([3,.4,7],[1.50,1.98,0],0,2);
-drawbuilding([3,.4,7],[1.75,1.98,0],0,2);
-drawbuilding([3,.4,7],[2.0,1.98,0],0,2);
-drawbuilding([3,.4,7],[2.25,1.98,0],0,2);
-
-
-drawbuilding([3,.4,7],[2.39-3,0.12,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.39-3,0.12+.25,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.39-3,0.12+.50,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.39-3,0.12+.75,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.39-3,0.12+1.0,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.39-3,0.12+1.25,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.39-3,0.12+1.50,0],3.14/2,2);
-drawbuilding([3,.4,7],[2.39-3,0.12+1.75,0],3.14/2,2);
-
-drawbuilding([3,.4,7],[1.89-2,0.62,0],3.14/2,2);
-drawbuilding([3,.4,7],[1.89-2,0.62+.25,0],3.14/2,2);
-drawbuilding([3,.4,7],[1.89-2,0.62+.5,0],3.14/2,2);
-drawbuilding([3,.4,7],[1.89-2,0.62+.75,0],3.14/2,2);
+drawbuilding([4,1,1],[1.89-2,1,0],3.14/2,2);
 
 }
 
@@ -518,7 +438,7 @@ mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,trans)
 mat4.rotate(mMatrix,3.14/2,[1,0,0])
 mat4.rotate(mMatrix,rotat,[0,1,0])
-//mat4.scale(mMatrix,scal)
+mat4.scale(mMatrix,scal)
 mat4.scale(mMatrix,[.025,.05,.05])
 use_texture = 1;
 add_ambient = 0;
@@ -603,6 +523,8 @@ switch(image_num){
 	break
 	case 2:texture2use = sampleTexture2;
 	break
+	case 3:texture2use = sampleTexture3;
+	break
 	case 15:texture2use = sampleTexture15;
 	break
 	default:texture2use = sampleTexture0;
@@ -613,7 +535,6 @@ gl.bindTexture(gl.TEXTURE_2D, texture2use);    // bind the texture object to the
 gl.uniform1i(shaderProgram.textureUniform, 0);
 
 gl.activeTexture(gl.TEXTURE1);   // set texture unit 1 to use 
-gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubemapTexture);    // bind the texture object to the texture unit 
 gl.uniform1i(shaderProgram.cube_map_textureUniform, 1);   // pass the texture unit to the shader
 
 
@@ -686,6 +607,7 @@ function sleep (time) {
 	initTextures();
 	alert('loaded the images');
 
+	mat4.translate(cMatrix1,[0,0,-.1])
 	mat4.rotate(rMatrix1,3.14/1.8,[0,0,1])
 	c = 0
 	while(1){
@@ -694,16 +616,28 @@ function sleep (time) {
 	continous()
 	drawScene()
 	})
-		if(c==1000)
+		if(c==100000)
 		break
 	}
     }
 
+var check_flag = 0
+
+function check_fall(){
+	//return ball_x>1.25
+	}
+
 
     function continous(){
-	if (ball_z < .2){ ball_z+=0.005;
-	mat4.identity(cMatrixb)
-	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
+	if( check_fall()||check_flag){
+		ball_z-=0.005
+		mat4.identity(cMatrixb)
+		check_flag = 1
+	  mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
+	}
+	else if (ball_z < .2){ ball_z+=0.005;
+	  mat4.identity(cMatrixb)
+	  mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	}
 for(var i=0;i<object_list.length;i++){
 		object_list[i][1][2]+=.001
