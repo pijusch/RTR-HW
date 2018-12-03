@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<title> Lab4 </title>
+<title> Project </title>
 
 <!-- HTML file adapted from Prof. Shen's codes -->
 
@@ -75,8 +75,8 @@ void main(void) {
         vec3 eye_vector = normalize(-vec3(eye_pos));
         
         
-        vec4 ambient = vambient_coef * vlight_ambient; 
-        float ndotl = max(dot(v_normal, light_vector), 0.0); 
+        vec4 ambient = vambient_coef * vlight_ambient;
+        float ndotl = max(dot(v_normal, light_vector), 0.0);
 
         vec4 diffuse = vdiffuse_coef * vlight_diffuse* ndotl;
 
@@ -92,7 +92,7 @@ void main(void) {
 	if (use_texture ==0)
 	gl_FragColor = ambient;
         else if(use_texture ==1)
-	gl_FragColor = texcolor;
+	gl_FragColor = texcolor+specular;
 	else{
 	view_vector = normalize(vec3(vec4(0,0,0,1)-eye_pos));
           ref = normalize(reflect(-view_vector, v_normal));  // in eye space
@@ -189,14 +189,14 @@ gl_Position = uPMatrix*uVMatrix*uMMatrix*vec4(aVertexPosition, 1.0);
 </script>
 
 <script type="text/javascript" src="shaders_setup.js"></script>
-<script type="text/javascript" src="lab4.js"></script>
+<script type="text/javascript" src="project.js"></script>
 <script type="text/javascript" src="primitives.js"></script>
 
 </head>
 
 <body onload="webGLStart();">
 
-    <canvas id="lab4-canvas" style="border: 1;" width="500" height="500"></canvas>
+    <canvas id="project-canvas" style="border: 1;" width="500" height="500"></canvas>
 </br>
 <button id  = 'texture' onclick="buttonEvent(0)"> Texture ON/OFF </button>
 <button id  = 'cubemap' onclick="buttonEvent(1)"> CUBE MAP ON/OFF </button>

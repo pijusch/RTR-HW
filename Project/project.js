@@ -21,9 +21,11 @@ var that_shape = [0];
 var image_set = [0,1,2,3];
 var ball_x = 0
 var ball_y = 0.1
+var ball_z = .2
 
+var r_angle = 0;
 
-max_objects = 5;
+max_objects = 1;
 
 
 //Texture variables, each for 1 specific texture
@@ -57,72 +59,12 @@ function initTextures() {
 	sampleTexture1 = gl.createTexture();
 	sampleTexture1.image = new Image();
 	sampleTexture1.image.onload = function() {handleTextureLoaded(sampleTexture1);}
-	sampleTexture1.image.src = './images/2.jpg';
+	sampleTexture1.image.src = './images/ob1.jpg';
 
 	sampleTexture2 = gl.createTexture();
 	sampleTexture2.image = new Image();
 	sampleTexture2.image.onload = function() {handleTextureLoaded(sampleTexture2);}
 	sampleTexture2.image.src = './images/3.jpg';
-
-	sampleTexture3 = gl.createTexture();
-	sampleTexture3.image = new Image();
-	sampleTexture3.image.onload = function() {handleTextureLoaded(sampleTexture3);}
-	sampleTexture3.image.src = './images/4.jpg';
-
-	sampleTexture4 = gl.createTexture();
-	sampleTexture4.image = new Image();
-	sampleTexture4.image.onload = function() {handleTextureLoaded(sampleTexture4);}
-	sampleTexture4.image.src = './images/5.jpg';
-
-	sampleTexture5 = gl.createTexture();
-	sampleTexture5.image = new Image();
-	sampleTexture5.image.onload = function() {handleTextureLoaded(sampleTexture5);}
-	sampleTexture5.image.src = './images/6.jpg';
-
-	sampleTexture6 = gl.createTexture();
-	sampleTexture6.image = new Image();
-	sampleTexture6.image.onload = function() {handleTextureLoaded(sampleTexture6);}
-	sampleTexture6.image.src = './images/7.jpg';
-
-	sampleTexture7 = gl.createTexture();
-	sampleTexture7.image = new Image();
-	sampleTexture7.image.onload = function() {handleTextureLoaded(sampleTexture7);}
-	sampleTexture7.image.src = './images/8.jpg';
-
-	sampleTexture8 = gl.createTexture();
-	sampleTexture8.image = new Image();
-	sampleTexture8.image.onload = function() {handleTextureLoaded(sampleTexture8);}
-	sampleTexture8.image.src = './images/ob1.jpg';
-
-	sampleTexture9 = gl.createTexture();
-	sampleTexture9.image = new Image();
-	sampleTexture9.image.onload = function() {handleTextureLoaded(sampleTexture9);}
-	sampleTexture9.image.src = './images/ob2.jpg';
-
-	sampleTexture10 = gl.createTexture();
-	sampleTexture10.image = new Image();
-	sampleTexture10.image.onload = function() {handleTextureLoaded(sampleTexture10);}
-	sampleTexture10.image.src = './images/ob3.png';
-
-	sampleTexture11 = gl.createTexture();
-	sampleTexture11.image = new Image();
-	sampleTexture11.image.onload = function() {handleTextureLoaded(sampleTexture11);}
-	sampleTexture11.image.src = './images/ob4.jpg';
-
-	sampleTexture12 = gl.createTexture();
-	sampleTexture12.image = new Image();
-	sampleTexture12.image.onload = function() {handleTextureLoaded(sampleTexture12);}
-	sampleTexture12.image.src = './images/ob5.png';
-
-	sampleTexture13 = gl.createTexture();
-	sampleTexture13.image = new Image();
-	sampleTexture13.image.onload = function() {handleTextureLoaded(sampleTexture13);}
-	sampleTexture13.image.src = './images/floor.jpg';
-
-	sampleTexture14 = gl.createTexture();
-	sampleTexture14.image = new Image();
-	sampleTexture14.image.onload = function() {handleTextureLoaded(sampleTexture14);}
-	sampleTexture14.image.src = './images/top.jpg';
 
 	sampleTexture15 = gl.createTexture();
 	sampleTexture15.image = new Image();
@@ -139,18 +81,12 @@ function handleTextureLoaded(texture) {
 }
 
 
-
-
 function rand(min,max){
 	return Math.random() * (max - min) + min;
 	}
 
 
-
-
-
-
-var line_switch = 0
+var line_switch = 1
 var back_color = [1,1,1,1]
 
  var mMatrix = mat4.create();  // model matrix
@@ -219,57 +155,59 @@ mat4.perspective(angle,1,.1,10,pMatrix); //Projection Matrix
 mat4.multiply(pMatrix,World,vWorld); // Clip View Transformation
 
 
+function check_ball(ball_x,ball_y){
+
+	if (ball_x>2.38 || ball_x<-.6 || ball_y>0.5+1.5 || ball_y<0.01) return 0;
+	else if((ball_x<1.88 && ball_x>-0.12) && (ball_y>0.48 && ball_y <1.52)) return 0;
+	else return 1;
+
+}
+
 function keyboardEvent(event){
 	rat = 10
   if (event.keyCode == 87){	//Move Forward
-	//eye[1]+=.1;
-	//point[1]+=.1;
-	if (ball_x<=1.85)
+	if (check_ball(ball_x+0.5/rat,ball_y))
 	ball_x+=0.5/rat
 	mat4.identity(cMatrixb)
-	mat4.translate(cMatrixb,[ball_x,ball_y,0])
+	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	mat4.rotate(rMatrixb,-3.14/5,[0,1,0])
 
   }
   else if (event.keyCode == 83){ //Move Backward
 	//eye[1]-=.1;
 	//point[1]-=.1;
-	if (ball_x>=-.05)
+	if (check_ball(ball_x-0.5/rat,ball_y))
 	ball_x-=0.5/rat
 	mat4.identity(cMatrixb)
-	mat4.translate(cMatrixb,[ball_x,ball_y,0])
+	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	mat4.rotate(rMatrixb,3.14/5,[0,1,0])
-  }
-  else if( event.keyCode == 53||event.keyCode == 54){ //Zoom in and out
-	if(event.keyCode == 53) angle+=5;
-	else angle-=5;
-	mat4.perspective(angle,1,.1,10,pMatrix);
-	mat4.multiply(pMatrix,World,vWorld);
   }
   else if (event.keyCode == 68){ //Move Right
 		//eye[0]-=.1;
 	//point[0]-=.1;
-	if(ball_y<=.4)
+	if(check_ball(ball_x,ball_y+0.5/rat))
 	ball_y+=0.5/rat
 		mat4.identity(cMatrixb)
-	mat4.translate(cMatrixb,[ball_x,ball_y,0])
+	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	mat4.rotate(rMatrixb,-3.14/5,[1,0,0])
   }
   else if (event.keyCode == 65){	//Move left
 	//eye[0]+=.1;
 	//point[0]+=.1;
-	if(ball_y>=.1)
+	if(check_ball(ball_x,ball_y-0.5/rat))
 	ball_y-=0.5/rat
 	mat4.identity(cMatrixb)
-	mat4.translate(cMatrixb,[ball_x,ball_y,0])
-	mat4.rotate(rMatrixb,3.14/5,[0,1,0])
+	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
+	mat4.rotate(rMatrixb,3.14/5,[1,0,0])
 
   }
-  else if (event.keyCode == 55){  // Rotate
-		mat4.rotate(rMatrix1,3.14/10,[0,0,1])
+  else if (event.keyCode == 55){  // Rotate]
+		r_angle-=1;
+		mat4.rotate(rMatrix1,3.14/2,[0,0,1])
   }
 else if (event.keyCode == 56){    // Rotate Opposite
-	mat4.rotate(rMatrix1,-3.14/10,[0,0,1])
+		r_angle+=1;
+	mat4.rotate(rMatrix1,-3.14/2,[0,0,1])
   }
   else if (event.keyCode == 57){  // Rotate
 		mat4.rotate(rMatrix1,3.14/10,[0,1,0])
@@ -281,15 +219,62 @@ else if (event.keyCode == 50){  // Camera Down
 	eye[2]-=.1;
 	point[2]-=.1;
   }
+else if(event.keyCode ==32){
+	ball_z = -.1
+}
 else if (event.keyCode ==49){   // Camera Up
+	mat4.identity(cMatrixb)
+	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
 	eye[2]+=.1;
 	point[2]+=.1;
   }
-else if (event.keyCode ==51){   // Sphere Back
-	
+else if (event.keyCode ==74){   // Sphere Back
+	if (r_angle%4==0)
+	mat4.translate(cMatrix1,[0,.1,0])
+	else if (r_angle%4==1)
+	mat4.translate(cMatrix1,[-.1,0,0])
+	else if (r_angle%4==2)
+	mat4.translate(cMatrix1,[0,-.1,0])
+	else
+	mat4.translate(cMatrix1,[.1,0,0])
+	//eye[0]+=.1;
+	//point[0]+=.1;
   }
-else if (event.keyCode ==52){   // Sphere Back
-	
+else if (event.keyCode ==76){   // Sphere Back
+	if(r_angle%4==0)
+	mat4.translate(cMatrix1,[0,-.1,0])
+	else if (r_angle%4==1)
+	mat4.translate(cMatrix1,[.1,0,0])
+	else if(r_angle%4==2)
+	mat4.translate(cMatrix1,[0,.1,0])
+	else
+	mat4.translate(cMatrix1,[-.1,0,0])
+	//eye[0]-=.1;
+	//point[0]-=.1;
+  }
+else if (event.keyCode ==73){   // Sphere Back
+	if(r_angle%4==0)
+	mat4.translate(cMatrix1,[-.1,0,0])
+	else if(r_angle%4==1)
+	mat4.translate(cMatrix1,[0,-.1,0])
+	else if(r_angle%4==2)
+	mat4.translate(cMatrix1,[.1,0,0])
+	else
+	mat4.translate(cMatrix1,[0,.1,0])
+	//eye[1]+=.1;
+	//point[1]+=.1;
+  }
+else if (event.keyCode ==75){   // Sphere Back
+	if(r_angle%4==0)
+	mat4.translate(cMatrix1,[.1,0,0])
+	else if(r_angle%4==1)
+	mat4.translate(cMatrix1,[0,.1,0])
+	else if(r_angle%4==2)
+	mat4.translate(cMatrix1,[-.1,0,0])
+	else
+	mat4.translate(cMatrix1,[0,-.1,0])
+	//eye[1]-=.1;
+	//point[1]-=.1;
   }
 
   vMatrix = mat4.lookAt(eye,point,up);
@@ -333,11 +318,6 @@ function buttonEvent(arg){ /** Handles Button Events **/
 		potlit = !potlit
 	}
     else if(arg == 4){
-		alert(ball_x)
-		alert(ball_y)
-		alert(object_list[0][1][0])
-		alert(object_list[0][1][1])
-		use_dnd = !use_dnd
 		use_line = !use_line
 	}
     else if(arg == 5){
@@ -358,18 +338,49 @@ function setMatrixUniforms() {
 
 
 
-
-
-//Calls all the drawing function with arguments
-
-
 function drawfloor(trans,img){
 	c = square()
 	mat4.identity(mMatrix);
-	mat4.multiply(mMatrix,cMatrix1,mMatrix)
 	mat4.multiply(mMatrix,rMatrix1,mMatrix)
+	mat4.multiply(mMatrix,cMatrix1,mMatrix)
 	mat4.translate(mMatrix,trans)
 	mat4.translate(mMatrix,[.87,.25,.15])
+	mat4.scale(mMatrix,[.2,.05,.1])
+	use_texture = 1
+	image_num = img
+	redraw()
+
+
+	c = square()
+	mat4.identity(mMatrix);
+	mat4.multiply(mMatrix,rMatrix1,mMatrix)
+	mat4.multiply(mMatrix,cMatrix1,mMatrix)
+	mat4.translate(mMatrix,trans)
+	mat4.translate(mMatrix,[.87,.25+1.5,.15])
+	mat4.scale(mMatrix,[.2,.05,.1])
+	use_texture = 1
+	image_num = img
+	redraw()
+
+	c = square()
+	mat4.identity(mMatrix);
+	mat4.multiply(mMatrix,rMatrix1,mMatrix)
+	mat4.multiply(mMatrix,cMatrix1,mMatrix)
+	mat4.translate(mMatrix,trans)
+	mat4.translate(mMatrix,[.87-1.24,.25+.75,.15])
+	mat4.rotate(mMatrix,3.14/2,[0,0,1])
+	mat4.scale(mMatrix,[.2,.05,.1])
+	use_texture = 1
+	image_num = img
+	redraw()
+
+	c = square()
+	mat4.identity(mMatrix);
+	mat4.multiply(mMatrix,rMatrix1,mMatrix)
+	mat4.multiply(mMatrix,cMatrix1,mMatrix)
+	mat4.translate(mMatrix,trans)
+	mat4.translate(mMatrix,[.87+1.24,.25+.75,.15])
+	mat4.rotate(mMatrix,3.14/2,[0,0,1])
 	mat4.scale(mMatrix,[.2,.05,.1])
 	use_texture = 1
 	image_num = img
@@ -382,10 +393,10 @@ for (var i=0;i<object_list.length;i++){
 	drawobject(object_list[i][0],object_list[i][1],0,object_list[i][2])
 }
 
-drawfloor([0,0,0],13)
-drawfloor([0,0,-.55],14)
+drawfloor([0,0,.1],0)
+drawfloor([0,0,-.4],0)
 
-drawball([.3,.3,.3],[0,0,.065],0,15);
+drawball([.3,.3,.3],[0,0,0],0,15);
 
 
 drawbuildings()
@@ -395,70 +406,120 @@ drawbuildings()
 function drawobject(scal,trans,rotat,img){
 c = draw3D([1],2,4)
 mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,trans)
 mat4.rotate(mMatrix,rotat,[0,0,1])
 mat4.scale(mMatrix,scal)
 mat4.scale(mMatrix,[.3,.3,.3])
 use_texture = 1;
-add_ambient = 0;
-mat_diffuse = [1,1,0,1]
 image_num = img;
-add_light = 0;
 redraw()
-add_ambient = 0;
-mat_diffuse= [1,0,0,.1]
 
 c = square([1,1,1,0.5-trans[2]])
 mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
-mat4.translate(mMatrix,[trans[0],trans[1],.1])
-mat4.scale(mMatrix,[.01,.01,.01])
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
+mat4.translate(mMatrix,[trans[0],trans[1],.24])
+mat4.scale(mMatrix,scal)
+mat4.scale(mMatrix,[.008,.008,.008])
 use_texture = 0
-line_switch  =1
+line_switch  = 1
 redraw()
 line_switch = 0
 }
 
 function drawbuildings(){
 
-drawbuilding([5.8,.4,7],[-.11,.24,0],3.14/2,1);
-drawbuilding([5.8,.4,7],[-.11+2,.24,0],3.14/2,1);
 
-
-drawbuilding([3,.4,7],[0,0,0],0,1);
+drawbuilding([3,.4,7],[-.50,0,0],0,2);
+drawbuilding([3,.4,7],[-.25,0,0],0,2);
+drawbuilding([3,.4,7],[0,0,0],0,2);
 drawbuilding([3,.4,7],[.25,0,0],0,2);
-drawbuilding([3,.4,7],[.50,0,0],0,3);
-drawbuilding([3,.4,7],[.75,0,0],0,4);
-drawbuilding([3,.4,7],[1,0,0],0,5);
-drawbuilding([3,.4,7],[1.25,0,0],0,6);
-drawbuilding([3,.4,7],[1.50,0,0],0,7);
-drawbuilding([3,.4,7],[1.75,0,0],0,0);
+drawbuilding([3,.4,7],[.50,0,0],0,2);
+drawbuilding([3,.4,7],[.75,0,0],0,2);
+drawbuilding([3,.4,7],[1,0,0],0,2);
+drawbuilding([3,.4,7],[1.25,0,0],0,2);
+drawbuilding([3,.4,7],[1.50,0,0],0,2);
+drawbuilding([3,.4,7],[1.75,0,0],0,2);
+drawbuilding([3,.4,7],[2.0,0,0],0,2);
+drawbuilding([3,.4,7],[2.25,0,0],0,2);
 
 
-drawbuilding([3,.4,7],[0,0.5,0],0,1);
+drawbuilding([3,.4,7],[0,0.5,0],0,2);
 drawbuilding([3,.4,7],[.25,0.5,0],0,2);
-drawbuilding([3,.4,7],[.50,0.5,0],0,3);
-drawbuilding([3,.4,7],[.75,0.5,0],0,4);
-drawbuilding([3,.4,7],[1,0.5,0],0,5);
-drawbuilding([3,.4,7],[1.25,0.5,0],0,6);
-drawbuilding([3,.4,7],[1.50,0.5,0],0,7);
-drawbuilding([3,.4,7],[1.75,0.5,0],0,0);
+drawbuilding([3,.4,7],[.50,0.5,0],0,2);
+drawbuilding([3,.4,7],[.75,0.5,0],0,2);
+drawbuilding([3,.4,7],[1,0.5,0],0,2);
+drawbuilding([3,.4,7],[1.25,0.5,0],0,2);
+drawbuilding([3,.4,7],[1.50,0.5,0],0,2);
+drawbuilding([3,.4,7],[1.75,0.5,0],0,2);
+
+drawbuilding([3,.4,7],[2.38,0.12,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.38,0.12+.25,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.38,0.12+.50,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.38,0.12+.75,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.38,0.12+1.0,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.38,0.12+1.25,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.38,0.12+1.50,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.38,0.12+1.75,0],3.14/2,2);
+
+drawbuilding([3,.4,7],[1.89,0.62,0],3.14/2,2);
+drawbuilding([3,.4,7],[1.89,0.62+.25,0],3.14/2,2);
+drawbuilding([3,.4,7],[1.89,0.62+.5,0],3.14/2,2);
+drawbuilding([3,.4,7],[1.89,0.62+.75,0],3.14/2,2);
+
+drawbuilding([3,.4,7],[0,1.495,0],0,2);
+drawbuilding([3,.4,7],[.25,1.495,0],0,2);
+drawbuilding([3,.4,7],[.50,1.495,0],0,2);
+drawbuilding([3,.4,7],[.75,1.495,0],0,2);
+drawbuilding([3,.4,7],[1,1.495,0],0,2);
+drawbuilding([3,.4,7],[1.25,1.495,0],0,2);
+drawbuilding([3,.4,7],[1.50,1.495,0],0,2);
+drawbuilding([3,.4,7],[1.75,1.495,0],0,2);
+
+
+drawbuilding([3,.4,7],[-.5,1.98,0],0,2);
+drawbuilding([3,.4,7],[-.25,1.98,0],0,2);
+drawbuilding([3,.4,7],[0,1.98,0],0,2);
+drawbuilding([3,.4,7],[.25,1.98,0],0,2);
+drawbuilding([3,.4,7],[.50,1.98,0],0,2);
+drawbuilding([3,.4,7],[.75,1.98,0],0,2);
+drawbuilding([3,.4,7],[1,1.98,0],0,2);
+drawbuilding([3,.4,7],[1.25,1.98,0],0,2);
+drawbuilding([3,.4,7],[1.50,1.98,0],0,2);
+drawbuilding([3,.4,7],[1.75,1.98,0],0,2);
+drawbuilding([3,.4,7],[2.0,1.98,0],0,2);
+drawbuilding([3,.4,7],[2.25,1.98,0],0,2);
+
+
+drawbuilding([3,.4,7],[2.39-3,0.12,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.39-3,0.12+.25,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.39-3,0.12+.50,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.39-3,0.12+.75,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.39-3,0.12+1.0,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.39-3,0.12+1.25,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.39-3,0.12+1.50,0],3.14/2,2);
+drawbuilding([3,.4,7],[2.39-3,0.12+1.75,0],3.14/2,2);
+
+drawbuilding([3,.4,7],[1.89-2,0.62,0],3.14/2,2);
+drawbuilding([3,.4,7],[1.89-2,0.62+.25,0],3.14/2,2);
+drawbuilding([3,.4,7],[1.89-2,0.62+.5,0],3.14/2,2);
+drawbuilding([3,.4,7],[1.89-2,0.62+.75,0],3.14/2,2);
 
 }
 
 
 function drawbuilding(scal,trans,rotat,img){
-c = draw3D([1],2,4)
+c = square()
 mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.translate(mMatrix,trans)
-mat4.rotate(mMatrix,rotat,[0,0,1])
-mat4.scale(mMatrix,scal)
-mat4.scale(mMatrix,[.3,.3,.3])
+mat4.rotate(mMatrix,3.14/2,[1,0,0])
+mat4.rotate(mMatrix,rotat,[0,1,0])
+//mat4.scale(mMatrix,scal)
+mat4.scale(mMatrix,[.025,.05,.05])
 use_texture = 1;
 add_ambient = 0;
 mat_diffuse = [1,1,0,1]
@@ -473,8 +534,8 @@ mat_diffuse= [1,0,0,.1]
 function drawball(scal,trans,rotat,img){
 c = draw3D([0],4,8)
 mat4.identity(mMatrix);
-mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,rMatrix1,mMatrix)
+mat4.multiply(mMatrix,cMatrix1,mMatrix)
 mat4.multiply(mMatrix,cMatrixb,mMatrix)
 mat4.translate(mMatrix,trans)
 mat4.multiply(mMatrix,rMatrixb,mMatrix)
@@ -522,7 +583,7 @@ gl.uniform4f(shaderProgram.light_specularUniform, light_specular[0], light_specu
 
 setMatrixUniforms();
 
-if (line_switch)
+if (line_switch||use_line)
 	indices = lindices
 
 initBuffers()
@@ -542,32 +603,9 @@ switch(image_num){
 	break
 	case 2:texture2use = sampleTexture2;
 	break
-	case 3:texture2use = sampleTexture3;
-	break
-	case 4:texture2use = sampleTexture4;
-	break
-	case 5:texture2use = sampleTexture5;
-	break
-	case 6:texture2use = sampleTexture6;
-	break
-	case 7:texture2use = sampleTexture7;
-	break
-	case 8:texture2use = sampleTexture8;
-	break
-	case 9:texture2use = sampleTexture9;
-	break
-	case 10:texture2use = sampleTexture10;
-	break
-	case 11:texture2use = sampleTexture11;
-	break
-	case 12:texture2use = sampleTexture12;
-	break
-	case 13:texture2use = sampleTexture13;
-	break
-	case 14:texture2use = sampleTexture14;
-	break
 	case 15:texture2use = sampleTexture15;
 	break
+	default:texture2use = sampleTexture0;
 }
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
 gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
@@ -579,7 +617,7 @@ gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubemapTexture);    // bind the texture obje
 gl.uniform1i(shaderProgram.cube_map_textureUniform, 1);   // pass the texture unit to the shader
 
 
-if (line_switch)
+if (line_switch||use_line)
  gl.drawElements(gl.LINES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0); 					
 
 else
@@ -608,7 +646,7 @@ function sleep (time) {
 
 
     function webGLStart() {  // First Call
-        var canvas = document.getElementById("lab4-canvas");
+        var canvas = document.getElementById("project-canvas");
         initGL(canvas);
         initShaders();
         
@@ -656,13 +694,17 @@ function sleep (time) {
 	continous()
 	drawScene()
 	})
-		if(c==10000)
+		if(c==1000)
 		break
 	}
     }
 
 
     function continous(){
+	if (ball_z < .2){ ball_z+=0.005;
+	mat4.identity(cMatrixb)
+	mat4.translate(cMatrixb,[ball_x,ball_y,ball_z])
+	}
 for(var i=0;i<object_list.length;i++){
 		object_list[i][1][2]+=.001
 	}
@@ -675,7 +717,7 @@ remove();
 
 function check(){
 	for (var i=0;i<object_list.length;i++){
-		if(object_list[i][1][2] >= 0){
+		if(object_list[i][1][2] >= 0.15){
 			if (intersection(ball_x,ball_y,object_list[i][1][0],object_list[i][1][1],object_list[i][0]))
 				alert('game over')
 		}
@@ -690,13 +732,14 @@ return !( (bx+0.03 < ox-0.035*size[0]) || (bx-0.03 > ox+0.035*size[0]) ||  (by+0
 
 function add(){
 	while(object_list.length < max_objects){
-		object_list.push([[1,1,1],[rand(0,1.2),rand(.05,.4),rand(-.4,-.2)],8+Math.ceil(Math.random()*100)%5])
+		object_list.push([[Math.random()+1,Math.random()+1,1],[rand(-.5,1.5),rand(.05,.4),rand(-.4,-.2)],1])
+		object_list.push([[Math.random()+1,Math.random()+1,1],[rand(0,1.2),rand(.05,.4)+1.55,rand(-.4,-.2)],1])
 	}
 }
 
 function remove(){
 	for (var i=0;i<object_list.length;i++){
-		if (object_list[i][1][2] > 0.06){//0+.06){
+		if (object_list[i][1][2] > 0.2){
 			object_list = object_list.splice(0,i).concat(object_list.splice(i+1,object_list.length))
 			remove()
 		}
