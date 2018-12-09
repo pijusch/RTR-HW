@@ -4,32 +4,34 @@ Steps:
 
 1. Open the html file in firefox browser.
 
+The aim is to avoid falling objects and danger signs on the floor.
+All the traps and objects are randomly generated and nothing has been hardcoded.
+
 
 #############Compatibility################
 
 This code was tested on firefox browser, and works fine on it. (Do not use chrome, things may go weird on it).
 
-#############Controlz####################
+#############Controls####################
 
 The camera controls are same as the assignment demands
 
 1: Moves camera up
 2: Moves camera down
-w: Moves camera front
-s: Moves camera back
-a: Moves camera left
-d: Moves camera right
-5: Zoom in
-6: Zoom out
+i: Moves camera front
+k: Moves camera back
+j: Moves camera left
+l: Moves camera right
 
-Additional controls to interact with the objects
+w: Moves ball front
+s: Moves ball back
+a: Moves ball left
+d: Moves ball right
 
-7: rotates objects about y axis (local)
-8: opposite rotation
-9: rotates objects about z axis
-10: rotates objects about x axis
+Reach the end of the alley and click "right", to turn right.
 
-
-#############Bonus Task(s) ###################
-Click on Do Not Pressm while objects are in Phong lighting mode (cube map and texture map disabled). Observe the pattern.
-
+HTML buttons
+1. Rotate Left, rotates scene to left
+2. Rotate Right, rotates scene to right
+3. Add objects, increases the number of falling objects
+4. Do not press, changes all the drawings to line drawings to see the entire scene at once (blue print of the scene)
